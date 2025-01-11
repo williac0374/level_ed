@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>level_Play_tester</title>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: black;
+  
+}
+canvas {
+  // border: 2px solid #000;
+  background-color: white;
+  height:100vh;
+}
+</style>
+</head>
+
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+window.onerror = function(message, source, lineno, colno, error) {let code = localStorage.getItem("codeIDE");let getScriptLine = code => code.split("<script>")[0].split("\n").length;let ln = (getScriptLine(code)-1) + lineno;msg = message+" , line :"+ ln+" , column: " +colno+ " , " +error;let errorCursor = {"line":ln,"ch":colno,"sticky":null};localStorage.setItem("errorCursorIDE",JSON.stringify(errorCursor));alert(msg);window.close();}
+
+
+map = JSON.parse(localStorage.getItem("level_ed_test"))
+
+
+canvas.width=0;
+canvas.height=0;
+tileset = ''
+tiles = [];
+tiles2 = [];;
+objects = [];
+mapW = 0;
+mapH = 0;
+gridSize = 0;
+viewport = {}
+function load_map(m){
+  tileset = draw_set_image(m.tileSet)
+  tiles = m.tiles;
+  tiles2 = m.tiles2;
+  objects = m.objects
+  mapW = m.mapW
+  mapH = m.mapH
+  viewport = m.view
+  gridSize = m.gridSize
+  canvas.width=viewport.w;//mapW*gridSize;
+  canvas.height=viewport.h;//mapH*gridSize;
+  for(let i = 0; i <objects.length; i++){
+    objects[i].x = objects[i].mapX*gridSize;
+    objects[i].y = objects[i].mapY*gridSize;
+    objects[i].firstRun=true;
+    objects[i].onceCode="";
+  }
+  
+}
+
+function draw_map() {
+  // Calculate the visible tile range
+  const startTileX = Math.floor(viewport.x / gridSize);
+  const endTileX = Math.ceil((viewport.x + viewport.w) / gridSize);
+  const startTileY = Math.floor(viewport.y / gridSize);
+  const endTileY = Math.ceil((viewport.y + viewport.h) / gridSize);
+  
+  // Draw tiles within the viewport
+  for (let y = startTileY; y < endTileY; y++) {
+    for (let x = startTileX; x < endTileX; x++) {
+      if (tiles[y] && tiles[y][x] != -1) {
+        let tId = tiles[y][x];
+        let sx = tId % 10 * gridSize;
+        let sy = Math.floor(tId / 10) * gridSize;
+        draw_image(
+        tileset,
+        x * gridSize - viewport.x, // Adjust by viewport
+        y * gridSize - viewport.y, // Adjust by viewport
+        gridSize,
+        gridSize,
+        0, 0, 0, sx, sy, gridSize, gridSize
+        );
+      }
+      if (tiles2[y] && tiles2[y][x] != -1) {
+        let tId = tiles2[y][x];
+        let sx = tId % 10 * gridSize;
+        let sy = Math.floor(tId / 10) * gridSize;
+        draw_image(
+        tileset,
+        x * gridSize - viewport.x, // Adjust by viewport
+        y * gridSize - viewport.y, // Adjust by viewport
+        gridSize,
+        gridSize,
+        0, 0, 0, sx, sy, gridSize, gridSize
+        );
+      }
+    }
+  }
+  
+  // Draw objects within the viewport
+  for (let i = objects.length - 1; i >= 0; i--) {
+    let me = objects[i];
+    let tId = me.tId;
+    let x = floor(me.x - viewport.x); // Adjust by viewport
+    let y = floor(me.y - viewport.y); // Adjust by viewport
+    let w = floor(me.w * gridSize);
+    let h = floor(me.h * gridSize);
+    let mapX = floor(me.x/gridSize);
+    let mapY = floor(me.y/gridSize);
+    let rot = me.rot;
+    let sx = tId % 10 * gridSize;
+    let sy = Math.floor(tId / 10) * gridSize;
+    let ox = (gridSize * me.w) / 2;
+    let oy = (gridSize * me.h) / 2;
+    
+    // Skip objects outside the viewport for optimization
+    if (
+    x + w < 0 || x > viewport.w ||
+    y + h < 0 || y > viewport.h
+    ) {
+      continue;
+    }
+    
+    if (me.firstRun == true) {
+      me.firstRun = false;
+      eval(me.startCode);
+    }
+    eval(me.loopCode);
+    if (me.tId != 0) {
+      draw_image(tileset, x, y, w, h, rot, ox, oy, sx, sy, gridSize, gridSize);
+    } else {
+      eval(me.drawCode);
+    }
+  }
+}
+
+
+function place_free(passableIDs, x, y, w, h, map, gsize) {
+  const hits = getOverlappingTiles(x, y, w, h, map, gsize);
+  
+  // Ensure passableIDs is an array
+  const passable = Array.isArray(passableIDs) ? passableIDs : [passableIDs];
+  
+  // Return true if all tiles in hits are in passableIDs
+  return hits.every(tile => passable.includes(tile));
+}
+
+
+function getOverlappingTiles(x, y, w, h, map, tileSize) {
+  const overlappingTiles = [];
+  
+  // Calculate the bounding box in terms of tile indices
+  const leftTile = Math.floor(x / tileSize);
+  const rightTile = Math.floor((x + w) / tileSize);
+  const topTile = Math.floor(y / tileSize);
+  const bottomTile = Math.floor((y + h) / tileSize);
+  
+  // Loop through each tile in the bounding box
+  for (let row = topTile; row <= bottomTile; row++) {
+    for (let col = leftTile; col <= rightTile; col++) {
+      // Check if the tile is within map bounds
+      if (row >= 0 && row < map.length && col >= 0 && col < map[row].length) {
+        overlappingTiles.push(map[row][col]);
+      }
+    }
+  }
+  
+  return overlappingTiles;
+}
+
+function ob(name){
+  var obj = null;
+  for (let i = objects.length - 1; i >= 0; i--) {
+    if(objects[i].name===name){
+      obj=objects[i]
+    }
+  }
+  return obj
+}
+function once(name,code){
+  var object = null;
+  for (let i = objects.length - 1; i >= 0; i--) {
+    if(objects[i].name===name){
+      object = objects[i]
+    }
+  }
+  if(object!=null){
+    object.onceCode=code
+  }else{
+    alert('theres no object named :'+name)
+  }
+  
+  
+}
+function get_cell(inp){
+  return round(inp/gridSize);
+}
+
+function view_follow(obj,margin,speed){
+  //horizontal
+if(obj.x>viewport.x+viewport.w*(margin/100)){viewport.x+=speed}
+if(obj.x<viewport.x+viewport.w*(((100-margin)/100))){viewport.x-=speed}
+  viewport.x=clamp(viewport.x, 0, mapW*gridSize-viewport.w)
+  
+  //vertical
+if(obj.y>viewport.y+viewport.h*(margin/100)){viewport.y+=speed}
+if(obj.y<viewport.y+viewport.h*(((100-margin)/100))){viewport.y-=speed}
+  viewport.y=clamp(viewport.y, 0, mapH*gridSize-viewport.h)
+}
+
+
+
+function start(){
+  load_map(map)
+}
+
+
+function loop(){
+  
+}
+
+function draw(){
+  draw_map()
+}
+
+
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
