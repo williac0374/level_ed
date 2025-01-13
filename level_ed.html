@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level_Ed</title>
+<script src= "codeMirror/codemirror.js"></script>
+<link rel="stylesheet" href="codeMirror/codemirror.css">
+<script src= "codeMirror/javascript.js"></script>
+<link rel="stylesheet" href="codeMirror/base16-dark.css">
+<script src= "codeMirror/matchbrackets.js"></script>
+<script src= "help.js"></script>
+<script src= "pre.js"></script>
+<script src= "post.js"></script>
+<style>
+body{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: black;
+  
+}
+canvas {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  // border: 2px solid #000;
+  background-color: rgb(88,88,88);
+}
+#editor{
+  position: absolute;
+  display: none;
+  left:0%;
+  top:0%;
+  width: 100%;
+  height: 100%;
+  background-color: blue;
+}
+.CodeMirror {
+  height: 100%; /* Ensure CodeMirror takes the full height of its container */
+  width: 100%;  /* Ensure CodeMirror takes the full width of its container */
+}
+</style>
+</head>
+
+<body>
+<input type="file" id="fileInput" accept=".json" style="display:none">
+<input type="file" id="scriptInput" accept=".js" style="display:none">
+
+<canvas id="canvas"></canvas>
+<div id='editor'></div>
+<script>
+	//localStorage.removeItem("level_ed");window.close()
+// Initialize CodeMirror
+var editor = CodeMirror(document.getElementById("editor"), {
+  mode: "javascript",
+  theme: "base16-dark",
+  lineNumbers: true,
+  matchBrackets: true,
+  lineWrapping: true,
+  autoCloseBrackets: true,
+  styleActiveLine: true
+});
+cMirrorCursor=null
+editor.on("change",function(cm,change){
+  cMirrorCursor=editor.getCursor()
+  for(let i = objects.length-1; i>=0; i--){
+    if(objects[i].sel==true){
+    if(scriptMode==0){objects[i].startCode=editor.getValue()}
+    if(scriptMode==1){objects[i].loopCode=editor.getValue()}
+    if(scriptMode==2){objects[i].drawCode=editor.getValue()}
+    if(scriptMode==3){objects[i].name=editor.getValue()}
+    }
+  }
+});
+selectedRange = null;
+selection = null
+coding=false
+editor.on('blur', () => {
+	coding=false;
+  selection = editor.getSelection();
+  if (selection) {
+    selectedRange = editor.listSelections()[0];
+  }
+});
+
+editor.on('focus', () => {
+	coding=true;
+});
+
+function resizeCanvas() {
+  var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+  var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  canvas.width=WIDTH;
+  canvas.height=HEIGHT;
+    document.getElementById("editor").style.left=(tilesRect.x+4)+'px';
+  document.getElementById("editor").style.top=(tilesRect.y+4)+'px';
+  document.getElementById("editor").style.width=(tilesRect.w-8)+'px';
+  document.getElementById("editor").style.height=(tilesRect.h-8)+'px';
+  document.getElementsByClassName("CodeMirror")[0].style.fontSize =   project.codeSize+"px";
+  editor.refresh();
+  
+}
+
+// Call resizeCanvas immediately on load and bind to resize event
+setTimeout(function(){
+  resizeCanvas();
+  setTimeout(function(){
+    makeButton(tilesRect.x+4,4,'NAME','scriptMode=3;show_code();mouse_down=false');
+    makeButton(tilesRect.x+64,4,'START','scriptMode=0;show_code();mouse_down=false');
+    makeButton(tilesRect.x+124,4,'LOOP','scriptMode=1;show_code();mouse_down=false');
+    makeButton(tilesRect.x+184,4,'DRAW','scriptMode=2;show_code();mouse_down=false');
+    makeButton(tilesRect.x+244,4,'HELP','helpBox();mouse_down=false');
+    makeButton(tilesRect.x+304,4,'LOAD','loadScript();mouse_down=false');
+    makeButton(tilesRect.x+364,4,'SAVE','exportScript();mouse_down=false');
+    setTimeout(function(){
+      var tick=1
+      buttons.forEach(button => {
+        if(button.label!='NAME' && button.label!='START' && button.label!='LOOP' && button.label!='DRAW' && button.label!='HELP'&& button.label!='LOAD'&& button.label!='SAVE'){
+          button.tsize=text_fit(button.label,button.w-20)
+        }else{
+          button.tsize=text_fit(button.label,button.w-70)
+        }
+      });
+    },100);
+  },100);
+},100);
+setTimeout(function(){
+  document.getElementById("editor").style.left=(tilesRect.x+4)+'px';
+  document.getElementById("editor").style.top=(tilesRect.y+4)+'px';
+  document.getElementById("editor").style.width=(tilesRect.w-8)+'px';
+  document.getElementById("editor").style.height=(tilesRect.h-8)+'px';
+  document.getElementsByClassName("CodeMirror")[0].style.fontSize =   project.codeSize+"px";
+  editor.refresh();
+  tilesRect.tilesX=canvas.width/2+4;
+  tilesRect.tilesY=menuRect.h+4;
+},500);
+//buttons
+window.addEventListener('resize', resizeCanvas);
+function reset(){
+	project = {tileSet:null,objects:[],codeSize:12,view:{x:0,y:0,w:120,h:120}};
+	mode = 2;
+	tiles = [];
+	tiles2 = [];
+	objects = [];
+	snapped=true;
+	obID=0;
+	after_start=false
+	object_code=''
+	buttons = [];
+	b_width = 5;
+	cur_value = null;
+	codeCursor=null
+	line = ''
+	scriptMode = 3;
+}
+reset();
+menuRect = {
+  x:0,
+  y:0,
+  w:canvas.width,
+  h:50,
+  mode:0,
+  draw:function(){
+    draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
+  },
+  loop:function(){
+    this.x = 0;
+    this.y = 0;
+    this.w = canvas.width;
+    this.h = 50;
+    if(this.mode==0){
+      for(let i = 0; i < 12; i++){
+        buttons[i].loop();
+        buttons[i].draw();
+      }
+    }
+    if(this.mode==1){
+      for(let i = 12; i < 19; i++){
+        buttons[i].loop();
+        buttons[i].draw();
+        draw_set_color(255,255,255)
+        let wideZone = text_fit('mouse wheel here to adjust code size',canvas.width/2-100)
+        draw_text(this.x+4,this.y+12,'mouse wheel here to adjust code size',wideZone , 100)
+      }
+    }
+    // hi-lites correct mode button
+    if(menuRect.mode==0){
+      draw_set_color(0,255,0);
+      draw_set_linewidth(8);
+      if(mode==0){
+        buttons[6].hilite=true;
+        buttons[7].hilite=false;
+        buttons[8].hilite=false;
+      }
+      if(mode==1){
+        buttons[6].hilite=false;
+        buttons[7].hilite=true;
+        buttons[8].hilite=false;
+      }
+      if(mode==2){
+        buttons[6].hilite=false;
+        buttons[7].hilite=false;
+        buttons[8].hilite=true;
+      }
+    }
+    if(menuRect.mode==1){
+        if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+        project.codeSize += wheelDir
+      if(project.codeSize<12){project.codeSize=12}
+        document.getElementsByClassName("CodeMirror")[0].style.fontSize =   project.codeSize+"px";
+        wheelDir=0;
+          editor.refresh();
+      }
+      draw_set_color(128,0,128);
+      draw_set_linewidth(8);
+      if(scriptMode==3){
+        buttons[12].hilite=true;
+        buttons[13].hilite=false;
+        buttons[14].hilite=false;
+        buttons[15].hilite=false;
+      }
+      if(scriptMode==0){
+        buttons[12].hilite=false;
+        buttons[13].hilite=true;
+        buttons[14].hilite=false;
+        buttons[15].hilite=false;
+      }
+      if(scriptMode==1){
+        buttons[12].hilite=false;
+        buttons[13].hilite=false;
+        buttons[14].hilite=true;
+        buttons[15].hilite=false;
+      }
+      if(scriptMode==2){
+        buttons[12].hilite=false;
+        buttons[13].hilite=false;
+        buttons[14].hilite=false;
+        buttons[15].hilite=true;
+      }
+    }
+  }
+}
+mapRect = {
+  x:0,
+  y:menuRect.h,
+  w:canvas.width/2,
+  h:canvas.height-20,
+  mapX:0,
+  mapY:menuRect.h,
+  mapW:10,
+  mapH:10,
+  mapG:16,
+  draw:function(){
+    
+    if(tilesRect.sprite!=null){
+      for (let y = 0; y < tiles.length; y++) {
+        for (let x = 0; x < tiles[y].length; x++) {
+          if(tiles[y][x]!=-1){
+            let tId = tiles[y][x];
+            let sx = tId%10*tilesRect.gridSize;
+            let sy = floor(tId/10)*tilesRect.gridSize;
+            draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          }
+        }
+      }
+      for (let y = 0; y < tiles2.length; y++) {
+        for (let x = 0; x < tiles2[y].length; x++) {
+          if(tiles2[y][x]!=-1){
+            let tId = tiles2[y][x];
+            let sx = tId%10*tilesRect.gridSize;
+            let sy = floor(tId/10)*tilesRect.gridSize;
+            draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          }
+        }
+      }
+      for(let i = objects.length-1; i>=0; i--){
+        if(objects[i].tId!=-1){
+          let tId = objects[i].tId;
+          let x = objects[i].x;
+          let y = objects[i].y;
+          let cx = objects[i].mapX;
+          let cy = objects[i].mapY;
+          let sx = tId%10*tilesRect.gridSize;
+          let sy = floor(tId/10)*tilesRect.gridSize;
+          let ox = (this.mapG*objects[i].w)/2;
+          let oy = (this.mapG*objects[i].h)/2;
+          draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,objects[i].rot,ox,oy,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          if(objects[i].sel==true){
+            draw_set_color(255,255,255)
+            draw_set_linedash([])
+            draw_set_linewidth(2)
+            draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,true,objects[i].rot,ox,oy)
+          }
+        }
+        
+      }
+    }
+    
+    // viewport border
+    draw_set_color(255,255,0)
+    draw_set_linewidth(4)
+    draw_set_linedash([2,5])//this.mapX+4,this.mapY+4
+    var mapScale = (this.mapG/tilesRect.gridSize)
+    
+    draw_rectangle( this.mapX+4+(project.view.x*mapScale),this.mapY+4+(project.view.y*mapScale), project.view.w*mapScale,project.view.h*mapScale,true)
+    draw_set_linedash([])
+    // mapRect border
+    draw_set_color(255,255,255)
+    draw_set_linewidth(8)
+    draw_set_linedash([])
+    draw_rectangle( this.x, this.y, this.w, this.h,true)
+    drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
+  },
+  init:function(){
+    objects = [];
+    project.objects = objects;
+    tiles = [];
+    tiles2 = [];
+    for (let i = 0; i < this.mapH; i++) {
+      var row = [];
+      for (let j = 0; j < this.mapW; j++) {
+        row.push(-1);
+      }
+      tiles.push(row);
+    }
+    project.tiles=tiles;
+    for (let i = 0; i < this.mapH; i++) {
+      var row = [];
+      for (let j = 0; j < this.mapW; j++) {
+        row.push(-1);
+      }
+      tiles2.push(row);
+    }
+    project.tiles2=tiles2;
+    project.mapW = this.mapW;
+    project.mapH = this.mapH;
+  },
+  loop:function(){
+    this.x = 0;
+    this.y = menuRect.h;
+    this.w = canvas.width/2;
+    this.h = canvas.height-menuRect.h;
+    
+    if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+      var w = 0;
+      var h = 0;
+      var r = 0;
+      var v = 0;
+      var s = 0;
+    if(keyboard_check(vk_w)){w=1};
+    if(keyboard_check(vk_h)){h=1};
+    if(keyboard_check(vk_r)){r=1};
+    if(keyboard_check(vk_v)){v=1};
+    if(keyboard_check(vk_s)){s=1};
+      
+      if(w+h+r+v>0){
+        if(v==0){
+          for(let i = objects.length-1; i>=0; i--){
+            if(objects[i].sel==true && document.getElementById("customTextBox")==null){
+            if(w>0){objects[i].w+=wheelDir*0.1}
+            if(h>0){objects[i].h+=wheelDir*0.1}
+            if(r>0){objects[i].rot+=wheelDir*5}
+              
+            }
+          }
+          project.objects = objects
+          localStorage.setItem("level_ed", JSON.stringify(project))
+        }
+      }else{
+        if(document.getElementById("customTextBox")==null){
+          this.mapG += wheelDir*1.5;
+        }
+      }
+      wheelDir=0;
+      var obj_move = false
+      for(let i = objects.length-1; i>=0; i--){
+        if(objects[i].sel==true){
+          obj_move=true;
+          let mod = 0.1
+          
+        if(keyboard_check_pressed(vk_up)){objects[i].mapY-= mod;objects[i].y-=mod*this.mapG}
+        if(keyboard_check_pressed(vk_down)){objects[i].mapY += mod;objects[i].y+=mod*this.mapG}
+        if(keyboard_check_pressed(vk_left)){objects[i].mapX -= mod;objects[i].x-=mod*this.mapG}
+        if(keyboard_check_pressed(vk_right)){objects[i].mapX +=mod;objects[i].x+=mod*this.mapG}
+        }
+      }
+      project.objects = objects
+      localStorage.setItem("level_ed", JSON.stringify(project))
+      if(obj_move==false){
+      if(keyboard_check(vk_up)){this.mapY -= this.mapG}
+      if(keyboard_check(vk_down)){this.mapY += this.mapG}
+      if(keyboard_check(vk_left)){this.mapX -= this.mapG}
+      if(keyboard_check(vk_right)){this.mapX += this.mapG}
+      }
+      let gs = this.mapG
+      let mx = mouse_x;
+      let my = mouse_y;
+      if(mode<2||snapped==true){
+        mx = (floor((mouse_x-this.mapX)/gs)*gs)+this.mapX+4
+        my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
+      }
+      cursor(mx,my,gs,gs,cur_value)
+      mapCellX = 0;
+      mapCellY = 0;
+    if((mx-this.mapX-4)>0){mapCellX = (mx-this.mapX-4)/this.mapG}
+    if((my-this.mapY-4)>0){mapCellY = (my-this.mapY-4)/this.mapG}
+      if(mouse_check()){
+        if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
+          if(my>this.mapY && my < this.mapY+this.mapH*this.mapG){
+            document.title = 'mapCellX : '+mapCellX
+            if(v>0){
+              if(s==0){
+                project.view.x = mapCellX*tilesRect.gridSize;
+                project.view.y = mapCellY*tilesRect.gridSize;
+              }
+              if(s>0){
+                if(mx > project.view.x){
+                  project.view.w = ((mapCellX+1)*tilesRect.gridSize) -  project.view.x
+                }
+              }
+              if(s>0){
+                if(my > project.view.y){
+                  project.view.h = ((mapCellY+1)*tilesRect.gridSize) -  project.view.y
+                }
+              }
+            }
+            
+            if(cur_value!=null){
+              if(mode==0){
+                tiles[mapCellY][mapCellX]=selected.tId;
+                project.tiles[mapCellY][mapCellX]=selected.tId;
+              }
+              if(mode==1){
+                tiles2[mapCellY][mapCellX]=selected.tId;
+                project.tiles2[mapCellY][mapCellX]=selected.tId;
+              }
+              if(mode==2){
+                let temp = {
+                  name:makeName(),
+                  tId:selected.tId,
+                  x:mx,
+                  y:my,
+                  mapX:mapCellX+0.5,
+                  mapY:mapCellY+0.5,
+                  w:1,
+                  h:1,
+                  rot:0,
+                  ox:0,
+                  oy:0,
+                  startCode:'',
+                  loopCode:'',
+                  drawCode:'',
+                  sel:false
+                }
+                objects.push(temp);
+                project.objects = objects;
+                mouse_down=false;
+                console.log(objects)
+              }
+              localStorage.setItem("level_ed", JSON.stringify(project))
+            }else{
+              if(mode==2){
+                var noneSelected=true
+                for(let i = objects.length-1; i>=0; i--){
+                  let cx = objects[i].mapX;
+                  let cy = objects[i].mapY;
+                  let obx = this.mapX+4+(cx*this.mapG);
+                  let oby = this.mapY+4+(cy*this.mapG);
+                  let scaledW = this.mapG*objects[i].w;
+                  let scaledH = this.mapG*objects[i].h;
+                  let ox = (this.mapG*objects[i].w)/2;
+                  let oy = (this.mapG*objects[i].h)/2;
+                  draw_set_color(255,255,255)
+                  draw_set_linewidth(2)
+                  draw_set_linedash([8,2])
+                  draw_rectangle(obx,oby,scaledW,scaledH,true,objects[i].rot,ox,oy)
+                  draw_set_linedash([])
+                  if(inside(mouse_x, mouse_y, obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH,true,objects[i].rot,ox,oy)){//object clicked
+                  for(let o = 0; o < objects.length;o++){objects[o].sel=false}///????hopefully
+                    objects[i].sel=true;
+                  if(scriptMode==0){object_code=JSON.stringify(objects[i].startCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+                  if(scriptMode==1){object_code=JSON.stringify(objects[i].loopCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+                  if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+                  if(scriptMode==3){object_code=JSON.stringify(objects[i].name).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+                    //SHOWS EDITOR AND SETS INITIAl VALUE
+                    document.getElementById("editor").style.display='block'
+                    editor.setValue(object_code);
+                    noneSelected = false;
+                    ;mouse_down=false;
+                  }else{
+                    objects[i].sel=false
+                    ;mouse_down=false;
+                  }
+                }
+                if(noneSelected==true){
+                  document.getElementById("editor").style.display='none'
+                  // WHEN THE MOUSE IS CLICKED ON MOUSE NOT ON OBECT
+                  //CHECKS IF CODEIDE IS CREATED IF  SO  KILLS IT
+                  /*
+                  if(document.getElementById('codeIDE')!=null){
+                    document.getElementById('codeIDE').kill();
+                  }
+                  */
+                  menuRect.mode=0;
+                  
+                }else{
+                  menuRect.mode=1;
+                }
+              }else{
+                if(mode==0){
+                  tiles[mapCellY][mapCellX]=selected.tId;
+                  project.tiles[mapCellY][mapCellX]=selected.tId;
+                }
+                if(mode==1){
+                  tiles2[mapCellY][mapCellX]=selected.tId;
+                  project.tiles2[mapCellY][mapCellX]=selected.tId;
+                }
+                
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+mapRect.init();
+tilesRect = {
+  x:canvas.width/2,
+  y:menuRect.h,
+  w:canvas.width/2,
+  h:canvas.height-menuRect.h,
+  tilesX:canvas.width/2+4,
+  tilesY:menuRect.h+4,
+  gridSize:32,
+  sprite:null,
+  scale:1,
+  draw:function(){
+    
+    draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
+    if(menuRect.mode==0){
+      if(this.sprite!=null){
+        draw_image(this.sprite,this.tilesX,this.tilesY,this.sprite.width*this.scale,this.sprite.height*this.scale)
+        drawG(this.tilesX,this.tilesY,this.gridSize*this.scale,this.gridSize*this.scale,this.sprite.width*this.scale,this.sprite.height*this.scale);
+        
+      }
+    }
+    
+  },
+  loop:function(){
+    if(menuRect.mode==0){
+      this.x = canvas.width/2;
+      this.y = menuRect.h;
+      this.w = canvas.width/2;
+      this.h = canvas.height-menuRect.h;
+      if(this.sprite!=null){
+        if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+          this.scale += wheelDir*0.25;
+          
+          wheelDir=0;
+          let gs = this.gridSize*this.scale
+          let mx = (floor((mouse_x-this.tilesX)/gs)*gs)+this.tilesX
+        if(mx>(this.sprite.width*this.scale+this.tilesX)-gs){mx = (this.sprite.width*this.scale+this.tilesX)-gs}
+          let my = (floor((mouse_y-this.tilesY)/gs)*gs)+this.tilesY
+        if(my>(this.sprite.height*this.scale+this.tilesY)-gs){my = (this.sprite.height*this.scale+this.tilesY)-gs}
+          
+          let sx =(this.sprite.width*this.scale)
+          cursor(mx,my,gs,gs,null)
+          if(selected.tId!=null){
+            selected.x=(selected.cellX*gs)+this.tilesX;
+            selected.y=(selected.cellY*gs)+this.tilesY;
+            selected.w=gs;
+            selected.h=gs;
+          }
+          if(mouse_check_pressed()){
+            selected.x=mx;
+            selected.y=my;
+            selected.w=gs;
+            selected.h=gs;
+            selected.cellX=(mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale)))
+            selected.cellY=(my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale)))
+            selected.tId = ((selected.cellY*10)+selected.cellX)
+            document.title = 'tId: '+selected.tId
+            cur_value = this.sprite;
+          }
+        }
+        let tId = ((selected.cellY*10)+selected.cellX)
+        
+      }else{
+        draw_set_color(0,0,0);
+        draw_centered_text(this.x+(this.w/2), this.y+(this.h/2), "NO TILESET LOADED", this.w/20)
+        buttons[0].hilite=true
+        
+        
+      }
+    }else{ // changes code editor text size?
+      if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+        if(document.getElementById("customTextBox")==null){
+          
+          
+          //document.getElementById('codeIDE').style.fontSize = project.codeSize+'px';
+        }
+        wheelDir=0;
+      }
+    }
+  }
+}
+project.gridSize=tilesRect.gridSize
+
+selected = {
+  x:null,
+  y:null,
+  w:null,
+  h:null,
+  tId:-1,
+  cellX:null,
+  cellY:null,
+  draw:function(){
+    if(menuRect.mode==0){
+      draw_set_linewidth(1.5)
+      draw_set_color(255,255,255)
+      draw_set_linedash([])
+      draw_rectangle(this.x, this.y, this.w, this.h,true)
+      draw_set_linedash([])
+    }
+  }
+}
+code = {
+  x:tilesRect.x+4,
+  y:tilesRect.y+4,
+  w:tilesRect.w
+  
+  
+}
+
+function text_fit(text,width){
+  for(let i = 6; i<120; i++){// statilesRect.spritert way small
+    ctx.font = i+'px Arial'; // set font for testing
+    if(ctx.measureText(text).width>=width){ // checks if text doesnt fit bounds
+      return i-1; // outputs previous i since it probably fit
+    }
+  }
+}
+
+function makeButton(x,y,label,funct){
+  temp = {
+    x:x,
+    y:y,
+    w:100,
+    h:menuRect.h-8,
+    tsize:2,
+    bckCol:[188,188,188],
+    brdCol:[55,55,55],
+    lblCol:[55,55,55],
+    hilite:false,
+    label:label,
+    draw:function(){
+      draw_rect_ol(this.x,this.y,this.w,this.h,4,this.bckCol,this.brdCol)
+      draw_set_color(this.lblCol[0],this.lblCol[1],this.lblCol[2]);
+      draw_centered_text(this.x+this.w/2, this.y+this.h/2, this.label, this.tsize)
+      if(this.hilite==true){
+        draw_set_color(0,255,0);
+        draw_set_linedash([])
+        draw_set_linewidth(6)
+        draw_rectangle(this.x, this.y, this.w, this.h,true)
+      }
+    },
+    loop:function(){
+      this.x = menuRect.x+x;
+      this.y = menuRect.y+y;
+      this.w = 80;
+    if(this.label=='NAME'||this.label=='START'||this.label=='LOOP'||this.label=='DRAW'||this.label=='HELP'||this.label=='LOAD'||this.label=='SAVE'){this.w = 60}
+      this.h = menuRect.h-8;
+      // hover and click
+      if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){// hover
+        this.bckCol=[222,222,222];
+        if(mouse_check_pressed()){
+          eval(funct)
+        }
+      }else{
+        this.bckCol=[188,188,188];
+      }
+    }
+  }
+  buttons.push(temp)
+}
+
+let bX = 0
+makeButton(4+bX,4,'load tSet','loadTiles();mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));project.gridSize=tilesRect.gridSize;localStorage.setItem("level_ed", JSON.stringify(project));mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mapRect.init();mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'mapH','mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mapRect.init();mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'Save Project','saveProject();mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'Load Project','load();mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'Tiles1','mode=0;mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'Tiles2','mode=1;mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'Objects','mode=2;mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'Snap2Grid','if(snapped==true){snapped=false;buttons[9].label="FreeMove"}else{snapped=true;buttons[9].label="Snap2Grid"};mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'exportGAME','exportGAME();mouse_down=false');
+bX+=80;
+makeButton(4+bX,4,'test','test();mouse_down=false');
+bX+=80;
+function start(){
+  
+  if(localStorage.getItem("level_ed")!=null){
+    project=JSON.parse(localStorage.getItem("level_ed"))
+    if(project.tileSet!=null){
+      tilesRect.sprite = draw_set_image(project.tileSet)
+      tiles = project.tiles;
+      tiles2 = project.tiles2;
+      objects = project.objects;
+      mapRect.mapW =  project.mapW;
+      mapRect.mapH = project.mapH;
+      mapRect.mapG = project.gridSize;
+      tilesRect.gridSize = project.gridSize
+    }
+  }
+}
+function drawRoundedRectangle(x, y, width, height, radius) {
+  if (radius > Math.min(width, height) / 2) {
+    radius = Math.min(width, height) / 2;
+  }
+  
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.arcTo(x + width, y, x + width, y + radius, radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+  ctx.lineTo(x + radius, y + height);
+  ctx.arcTo(x, y + height, x, y + height - radius, radius);
+  ctx.lineTo(x, y + radius);
+  ctx.arcTo(x, y, x + radius, y, radius);
+  ctx.closePath();
+  ctx.fill();
+  //ctx.stroke();
+  
+}
+colR=0;
+colG=0;
+colB=0;
+colorShow=false
+function show_color(){
+  let col = getPixelColor(canvas, mouse_x, mouse_y)
+  colR=col[0];
+  colG=col[1];
+  colB=col[2];
+  draw_set_color(255,255,255)
+  drawRoundedRectangle(tilesRect.x-50, tilesRect.y, 100, 100, 12)
+  draw_set_color(colR,colG,colB)
+  drawRoundedRectangle(tilesRect.x-40, tilesRect.y+10, 80, 80, 12)
+}
+
+function loop(){ //;vk_all_keys=[]
+	if(keyboard_check(vk_ctrl)&&keyboard_check(vk_shift)){
+		buttons[11].label='reset'
+		buttons[11].hilite=true
+	}else{
+		buttons[11].label='TEST'
+		buttons[11].hilite=false
+	}
+	if(keyboard_check_pressed(120)){test()} //f9
+  if(mouse_check_pressed() && keyboard_check(vk_c)){
+    if(colorShow==false){
+      colorShow=true
+    }else{
+      colorShow=false
+      key_down[vk_c] = false;
+      mouse_down=false;
+      alert([colR,colG,colB])
+    }
+  }
+  // CHECKS IF CODEEDITOR HAS  FOCUS  TO KEEP FROM WEIRD BEHAVIOUR FROM INPUT (MOVING OBJECTS ECT)
+  if(keyboard_check_pressed(vk_delete)&&mouse_x<window.innerWidth/2&&document.activeElement!=document.getElementById("codeIDE")){
+    selected.tId=-1;
+    cur_value=null;
+    for(let i = objects.length-1; i>=0; i--){
+    if(objects[i].sel==true&&coding==false){
+		objects.splice(i,1);
+		document.getElementById("editor").style.display='none';
+		}
+    }
+    menuRect.mode=0;
+  }
+  mapRect.loop();
+  menuRect.loop();
+  tilesRect.loop();
+}
+
+
+function draw(){
+  
+  mapRect.draw();
+  menuRect.draw();
+  tilesRect.draw();
+  selected.draw();
+if(colorShow==true){show_color()}
+}
+
+function input(){
+  
+}
+function draw_selcted(x,y,w,h){
+  draw_set_linewidth(1)
+  draw_set_color(0,255,0)
+  draw_set_linedash([4,4])
+  draw_rectangle(x, y, w, h,true)
+  draw_set_linedash([])
+}
+function cursor(x,y,w,h,img){//selected.cellX,selected.cellY,tilesRect.sprite,tilesRect.gridSize
+  if(img!=null){
+    
+    draw_image(img,x,y,w,h,0,0,0,tilesRect.gridSize*selected.cellX, tilesRect.gridSize*selected.cellY,tilesRect.gridSize,tilesRect.gridSize)
+  }
+  draw_set_linewidth(1)
+  draw_set_color(255,255,255)
+  draw_set_linedash([4,4])
+  draw_rectangle(x, y, w, h,true)
+  draw_set_linedash([])
+}
+
+function drawG(x,y,xw,yh,w,h){
+  draw_set_linewidth(1)
+  draw_set_alpha(1)
+  draw_set_color(0,0,255)
+  draw_set_linedash([4,4])
+  for(let i = y; i <= y+h; i += yh){
+    draw_line(x, i, x+w, i)
+  }
+  for(let i = x; i <= x+w; i += xw){
+    draw_line(i, y, i, y+h)
+  }
+  draw_set_linedash([1])
+  draw_set_alpha(1)
+}
+function draw_rect_ol(x,y,w,h,borThk,bakCol,borCol){
+  draw_set_color(borCol[0],borCol[1],borCol[2])
+  draw_rectangle(x,y,w,h,false,0,0,0)
+  draw_set_color(bakCol[0],bakCol[1],bakCol[2])
+  draw_rectangle(x+borThk,y+borThk,w-borThk*2,h-borThk*2,false,0,0,0)
+}
+function loadTiles(){
+  var fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.multiple = true; // Enable selection of multiple files
+  fileInput.addEventListener('change', function(event) {
+    var files = event.target.files
+    if (files[0]) {
+      for(let i = 0; i < files.length; i++){
+        var reader = new FileReader();
+        reader.onload = function(readerEvent) {
+          var fileData =  readerEvent.target.result
+          tilesRect.sprite = draw_set_image(fileData)
+          project.tileSet=tilesRect.sprite.src;
+          buttons[0].hilite=false
+          localStorage.setItem("level_ed", JSON.stringify(project))
+        };
+        reader.readAsDataURL(files[i]);
+      }
+    }
+  });
+  fileInput.click();
+}
+
+function saveProject() {
+  
+  var content = JSON.stringify(project)
+const blob = new Blob([content], { type: "text/json" }); // Create a Blob object with the JS content
+  const url = URL.createObjectURL(blob); // Create a URL for the Blob
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "map.json"; // Set the filename
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+function exportGAME() {
+  var content = pre_game
+  content += 'map = '+JSON.stringify(project)
+  content += post_game
+const blob = new Blob([content], { type: "text/html" }); // Create a Blob object with the JS content
+  const url = URL.createObjectURL(blob); // Create a URL for the Blob
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "game.html"; // Set the filename
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+function exportScript() {
+  // GETS CODEIDE CURRENT TEXT
+  var content = editor.getValue()
+const blob = new Blob([content], { type: "text/javascript" }); // Create a Blob object with the JS content
+  const url = URL.createObjectURL(blob); // Create a URL for the Blob
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "map.js"; // Set the filename
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+function loadScript(){
+  document.getElementById('scriptInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+        const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileContent = e.target.result;
+        //SETS CURRENT CODEIDE TEXT FROM LOCALFILE
+        editor.setValue(fileContent);
+        for(let i = 0; i < objects.length; i++){
+			if(objects[i].sel==true){
+				if(scriptMode==0){objects[i].startCode=fileContent}
+				if(scriptMode==1){objects[i].loopCode=fileContent}
+				if(scriptMode==2){objects[i].drawCode=fileContent}
+			}
+        }
+      };
+      reader.readAsText(file);  // Read the file content as text
+    
+  });
+  document.getElementById('scriptInput').click();
+}
+function load(){
+  document.getElementById('fileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/json') {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileContent = e.target.result;
+        project = JSON.parse(fileContent);  // Display as string
+        tilesRect.sprite = draw_set_image(project.tileSet)
+        tilesRect.gridSize=project.gridSize
+        tiles = project.tiles;
+        tiles2 = project.tiles2;
+        objects = project.objects;
+        mapRect.mapW =  project.mapW;
+        mapRect.mapH = project.mapH;
+        document.title = file.name
+        
+        buttons[0].hilite=false
+      };
+      reader.readAsText(file);  // Read the file content as text
+    } else {
+      alert('Please select a valid JSON file');
+    }
+  });
+  document.getElementById('fileInput').click();
+}
+function show_code(){
+  for(let i = objects.length-1; i>=0; i--){
+    if(objects[i].sel==true){
+    if(scriptMode==0){object_code=JSON.stringify(objects[i].startCode)}
+    if(scriptMode==1){object_code=JSON.stringify(objects[i].loopCode)}
+    if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode)}
+    if(scriptMode==3){object_code=JSON.stringify(objects[i].name)}
+      //SETS CODEIDE CODE
+      editor.setValue(object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n'));
+      //document.getElementById('codeIDE').value =object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+    }
+  }
+}
+textarea = null;
+function text_area(left, top, width, height, initial_text) {
+  // Create a textarea element
+  textarea = document.createElement('textarea');
+  
+  // Set styles for the textarea
+  textarea.id = 'codeIDE'
+  textarea.style.position = 'absolute';
+textarea.style.left = `${left}px`;
+textarea.style.top = `${top}px`;
+textarea.style.width = `${width}px`;
+textarea.style.height = `${height}px`;
+  textarea.style.backgroundColor = 'black';
+  textarea.style.color = 'white';
+  textarea.style.border = 'none';
+  textarea.style.outline = 'none';
+  textarea.style.resize = 'none';
+  textarea.style.padding = '10px';
+  textarea.style.fontFamily = 'monospace';
+  textarea.style.fontSize = project.codeSize+'px';
+  textarea.style.whiteSpace = "pre-wrap";
+  const formattedString = initial_text.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+  textarea.value = formattedString
+  textarea.onchange = function(){
+    for(let i = objects.length-1; i>=0; i--){
+      if(objects[i].sel==true){
+      if(scriptMode==0){objects[i].startCode=this.value}
+      if(scriptMode==1){objects[i].loopCode=this.value}
+      if(scriptMode==2){objects[i].drawCode=this.value}
+      if(scriptMode==3){objects[i].name=this.value}
+      }
+    }
+  };
+  textarea.oninput = function(){
+    for(let i = objects.length-1; i>=0; i--){
+      if(objects[i].sel==true){
+      if(scriptMode==0){objects[i].startCode=this.value}
+      if(scriptMode==1){objects[i].loopCode=this.value}
+      if(scriptMode==2){objects[i].drawCode=this.value}
+      if(scriptMode==3){objects[i].name=this.value}
+      }
+    }
+  };
+  textarea.kill = function(){
+    this.remove();
+    textarea = null;
+  };
+  textarea.run = function(){
+    
+    
+  }
+  // Append the textarea to the body
+  document.body.appendChild(textarea);
+  
+}
+
+
+function test(){
+  
+  if(keyboard_check(vk_ctrl)&&keyboard_check(vk_shift)){
+	  if(confirm('Reset level_ed?')){
+	  localStorage.removeItem("level_ed");
+	  reset();
+	  location.reload();
+  }
+	  }else{
+		  var content = pre_game
+		  content += 'map = '+JSON.stringify(project)
+		  content += post_game
+		  var myWindow = window.open();
+		  myWindow.document.write(content);
+}
+}
+function helpBoxBAK() {
+  //helptext
+  if(document.getElementById("customTextBox")!=null){
+    const element = document.getElementById("customTextBox");
+    element.remove();
+    return;
+  }
+  // Create a div element for the textbox
+  var textBox = document.createElement('div');
+  textBox.id = 'customTextBox';
+  
+  // Set styles for the textbox
+  textBox.style.position = 'fixed';
+  textBox.style.top = (tilesRect.y+4)+'px';
+  textBox.style.left = (tilesRect.x+4)+'px';
+  textBox.style.width = '50%';
+  textBox.style.height = '50%';
+  textBox.style.padding = '20px';
+  textBox.style.backgroundColor = '#fff';
+  textBox.style.border = '1px solid #ccc';
+  textBox.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+  textBox.style.zIndex = '9999';
+  //textBox.innerText = helpText;
+  textBox.style.overflow = 'auto';
+  // Append the textbox to the body
+  document.body.appendChild(textBox);
+  for (let i = 0; i < helpText.length; i++) {
+    const button = document.createElement('button');
+  button.textContent = `${helpText[i]}`;
+  button.id = `${helpText[i]}`;
+    button.style.fontSize = codeSize +'px';
+    textBox.appendChild(button);
+    textBox.appendChild(document.createElement('br'))
+    // Add a click event listener to each button
+    button.addEventListener('click', function () {
+      //alert(this.id)
+      cMcursor = editor.getCursor();
+    editor.replaceRange(this.id, { line: cMcursor.line, ch: cMcursor.ch });
+      navigator.clipboard.writeText(this.id);
+      const element = document.getElementById("customTextBox");
+      element.remove();
+      editor.getInputField().focus();
+      // navigator.clipboard.readText();
+    });
+  }
+}
+
+function helpBox() {
+  //helptext
+  if(document.getElementById("customTextBox")!=null){
+    const element = document.getElementById("customTextBox");
+    element.remove();
+    return;
+  }
+  // Create a div element for the textbox
+  var textBox = document.createElement('div');
+  textBox.id = 'customTextBox';
+  
+  // Set styles for the textbox
+  textBox.style.position = 'fixed';
+  textBox.style.top = (tilesRect.y+4)+'px';
+  textBox.style.left = (tilesRect.x+4)+'px';
+  //textBox.style.transform = 'translate(+50%, 0%)';
+  textBox.style.width = '50%';
+  textBox.style.height = '50%';
+  textBox.style.padding = '20px';
+  textBox.style.backgroundColor = 'rgb(88,88,88)';
+  textBox.style.border = '1px solid rgb(255,255,255)';
+  textBox.style.boxShadow = '0 4px 8px rgba(255,255,255, 0.1)';
+  textBox.style.zIndex = '9999';
+  //textBox.innerText = helpText;
+  textBox.style.overflow = 'auto';
+  // Append the textbox to the body
+  document.body.appendChild(textBox);
+  for (let i = 0; i < helpText.length; i++) {
+    const button = document.createElement('button');
+  button.textContent = `${helpText[i]}`;
+  button.id = `${helpText[i]}`;
+    button.style.fontSize = project.codeSize +'px';
+    button.style.backgroundColor = 'rgb(88,88,88)';
+    button.style.color = 'rgb(255,255,255)';
+    textBox.appendChild(button);
+    textBox.appendChild(document.createElement('br'))
+    // Add a click event listener to each button
+    button.addEventListener('click', function () {
+      cMcursor = editor.getCursor();
+    editor.replaceRange(this.id, { line: cMcursor.line, ch: cMcursor.ch });
+      navigator.clipboard.writeText(this.id);
+      const element = document.getElementById("customTextBox");
+      element.remove();
+      editor.getInputField().focus();
+      // navigator.clipboard.readText();
+    });
+  }
+}
+function makeName(){
+  var name=null
+  for(let index=0; index<100000; index++){
+    var match= false;
+    for(let i = 0; i < objects.length; i ++){
+      if(objects[i].name=='object'+index){
+        match = true
+      }
+    }
+    if(match!=true){
+      name= 'object'+index
+      index = 100000;
+    }
+  }
+  return name
+}
+
+function getPixelColor(canvas, x, y) {
+  if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
+    throw new Error("Invalid canvas element.");
+  }
+  
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Unable to get 2D context from canvas.");
+  }
+  
+  // Ensure coordinates are within canvas bounds
+  if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) {
+    throw new Error("Coordinates are out of canvas bounds.");
+  }
+  
+  // Get the pixel data at the specified coordinates
+  const pixelData = context.getImageData(x, y, 1, 1).data;
+  
+  // Return the [r, g, b] values
+  return [pixelData[0], pixelData[1], pixelData[2]];
+}
+
+
+
+</script>
+<script type='text/javascript' src='engine.js'></script>
+
+</body>
+</html>
