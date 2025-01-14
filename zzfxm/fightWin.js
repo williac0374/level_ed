@@ -1,0 +1,1 @@
+[[[.7,0,22,,.07,.07,2,0,,,.5,.01]],[[[,-1,13,,18,,19,,20,21]]],[0],30,{"title":"fightWin","instruments":["Korg Bass"],"patterns":["Pattern 0"]}]
