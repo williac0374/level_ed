@@ -539,6 +539,8 @@ tilesRect = {
   tilesX:canvas.width/2+4,
   tilesY:menuRect.h+4,
   gridSize:32,
+  sorX:0,
+  sorY:0,
   sprite:null,
   scale:1,
   draw:function(){
@@ -546,7 +548,9 @@ tilesRect = {
     draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
     if(menuRect.mode==0){
       if(this.sprite!=null){
-        draw_image(this.sprite,this.tilesX,this.tilesY,this.sprite.width*this.scale,this.sprite.height*this.scale)
+		  
+       // draw_image(this.sprite,this.tilesX,this.tilesY,this.sprite.width*this.scale,this.sprite.height*this.scale)
+        draw_image(this.sprite,this.tilesX,this.tilesY,this.sprite.width*this.scale,this.sprite.height*this.scale,0,0,0,this.sorX,this.sorY,this.sprite.width,this.sprite.height)
         drawG(this.tilesX,this.tilesY,this.gridSize*this.scale,this.gridSize*this.scale,this.sprite.width*this.scale,this.sprite.height*this.scale);
         
       }
@@ -554,6 +558,10 @@ tilesRect = {
     
   },
   loop:function(){
+	  	  if(keyboard_check_pressed(vk_up)){this.sorY -= this.gridSize}
+		  if(keyboard_check_pressed(vk_down)){this.sorY += this.gridSize}
+		  if(keyboard_check_pressed(vk_left)){this.sorX -= this.gridSize}
+		  if(keyboard_check_pressed(vk_right)){this.sorX += this.gridSize} 
     if(menuRect.mode==0){
       this.x = canvas.width/2;
       this.y = menuRect.h;
@@ -579,6 +587,8 @@ tilesRect = {
             selected.h=gs;
           }
           if(mouse_check_pressed()){
+			  //this.sorX
+			  //this.sorY
             selected.x=mx;
             selected.y=my;
             selected.w=gs;
@@ -602,8 +612,7 @@ tilesRect = {
     }else{ // changes code editor text size?
       if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
         if(document.getElementById("customTextBox")==null){
-          
-          
+
           //document.getElementById('codeIDE').style.fontSize = project.codeSize+'px';
         }
         wheelDir=0;
