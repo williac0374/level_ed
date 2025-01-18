@@ -18,9 +18,10 @@ body{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 99vh;
   width: 100vw;
   background-color: black;
+  overflow: hidden;
   
 }
 canvas {
@@ -143,7 +144,7 @@ setTimeout(function(){
 //buttons
 window.addEventListener('resize', resizeCanvas);
 function reset(){
-	project = {tileSet:null,objects:[],codeSize:12,view:{x:0,y:0,w:120,h:120}};
+	project = {tileSet:null,objects:[],codeSize:12,tColumns:10,view:{x:0,y:0,w:120,h:120}};
 	mode = 2;
 	tiles = [];
 	tiles2 = [];
@@ -263,8 +264,8 @@ mapRect = {
         for (let x = 0; x < tiles[y].length; x++) {
           if(tiles[y][x]!=-1){
             let tId = tiles[y][x];
-            let sx = tId%10*tilesRect.gridSize;
-            let sy = floor(tId/10)*tilesRect.gridSize;
+            let sx = tId%tilesRect.columns*tilesRect.gridSize;
+            let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
             draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
           }
         }
@@ -273,8 +274,8 @@ mapRect = {
         for (let x = 0; x < tiles2[y].length; x++) {
           if(tiles2[y][x]!=-1){
             let tId = tiles2[y][x];
-            let sx = tId%10*tilesRect.gridSize;
-            let sy = floor(tId/10)*tilesRect.gridSize;
+            let sx = tId%tilesRect.columns*tilesRect.gridSize;
+            let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
             draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
           }
         }
@@ -286,8 +287,8 @@ mapRect = {
           let y = objects[i].y;
           let cx = objects[i].mapX;
           let cy = objects[i].mapY;
-          let sx = tId%10*tilesRect.gridSize;
-          let sy = floor(tId/10)*tilesRect.gridSize;
+          let sx = tId%tilesRect.columns*tilesRect.gridSize;
+          let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
           let ox = (this.mapG*objects[i].w)/2;
           let oy = (this.mapG*objects[i].h)/2;
           draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,objects[i].rot,ox,oy,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
@@ -393,10 +394,10 @@ mapRect = {
       project.objects = objects
       localStorage.setItem("level_ed", JSON.stringify(project))
       if(obj_move==false){
-      if(keyboard_check(vk_up)){this.mapY -= this.mapG}
-      if(keyboard_check(vk_down)){this.mapY += this.mapG}
-      if(keyboard_check(vk_left)){this.mapX -= this.mapG}
-      if(keyboard_check(vk_right)){this.mapX += this.mapG}
+      if(keyboard_check(vk_up)){this.mapY -= this.mapG/10}
+      if(keyboard_check(vk_down)){this.mapY += this.mapG/10}
+      if(keyboard_check(vk_left)){this.mapX -= this.mapG/10}
+      if(keyboard_check(vk_right)){this.mapX += this.mapG/10}
       }
       let gs = this.mapG
       let mx = mouse_x;
@@ -540,7 +541,8 @@ tilesRect = {
   tilesY:menuRect.h+4,
   gridSize:32,
   sorX:0,
-  sorY:0,
+  sorY:0,    
+  columns:0,
   sprite:null,
   scale:1,
   draw:function(){
@@ -558,10 +560,7 @@ tilesRect = {
     
   },
   loop:function(){
-	  	  if(keyboard_check_pressed(vk_up)){this.sorY -= this.gridSize}
-		  if(keyboard_check_pressed(vk_down)){this.sorY += this.gridSize}
-		  if(keyboard_check_pressed(vk_left)){this.sorX -= this.gridSize}
-		  if(keyboard_check_pressed(vk_right)){this.sorX += this.gridSize} 
+
     if(menuRect.mode==0){
       this.x = canvas.width/2;
       this.y = menuRect.h;
@@ -569,8 +568,16 @@ tilesRect = {
       this.h = canvas.height-menuRect.h;
       if(this.sprite!=null){
         if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
-          this.scale += wheelDir*0.25;
-          
+		   if(keyboard_check_pressed(vk_up)){this.sorY -= this.gridSize}
+		  if(keyboard_check_pressed(vk_down)){this.sorY += this.gridSize}
+		  if(keyboard_check_pressed(vk_left)){this.sorX -= this.gridSize}
+		  if(keyboard_check_pressed(vk_right)){this.sorX += this.gridSize} 
+		  if(wheelDir<1){
+          if(this.scale>0.1){this.scale += wheelDir*0.05;}
+	      }else{
+			 this.scale += wheelDir*0.05;
+		  }
+          console.log(this.scale)
           wheelDir=0;
           let gs = this.gridSize*this.scale
           let mx = (floor((mouse_x-this.tilesX)/gs)*gs)+this.tilesX
@@ -581,8 +588,10 @@ tilesRect = {
           let sx =(this.sprite.width*this.scale)
           cursor(mx,my,gs,gs,null)
           if(selected.tId!=null){
-            selected.x=(selected.cellX*gs)+this.tilesX;
-            selected.y=(selected.cellY*gs)+this.tilesY;
+			let modX = this.sorX/this.gridSize
+			let modY = this.sorY/this.gridSize
+            selected.x=((selected.cellX-modX)*gs)+this.tilesX;
+            selected.y=((selected.cellY-modY)*gs)+this.tilesY;
             selected.w=gs;
             selected.h=gs;
           }
@@ -593,15 +602,17 @@ tilesRect = {
             selected.y=my;
             selected.w=gs;
             selected.h=gs;
-            selected.cellX=(mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale)))
-            selected.cellY=(my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale)))
-            selected.tId = ((selected.cellY*10)+selected.cellX)
-            document.title = 'tId: '+selected.tId
+            selected.cellX=round((mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale))))+(this.sorX/this.gridSize)
+            selected.cellY=round((my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale))))+(this.sorY/this.gridSize)
+            selected.tId = floor((selected.cellY*this.columns)+selected.cellX)
             cur_value = this.sprite;
           }
         }
-        let tId = ((selected.cellY*10)+selected.cellX)
-        
+         
+        let tId = ((selected.cellY*this.columns)+selected.cellX)
+        document.title = 'selected.tId: '+selected.tId
+        document.title += '   global tId: '+tId
+        document.title += '   this.columns' + this.columns
       }else{
         draw_set_color(0,0,0);
         draw_centered_text(this.x+(this.w/2), this.y+(this.h/2), "NO TILESET LOADED", this.w/20)
@@ -702,8 +713,8 @@ function makeButton(x,y,label,funct){
 
 let bX = 0
 makeButton(4+bX,4,'load tSet','loadTiles();mouse_down=false');
-bX+=80;
-makeButton(4+bX,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));project.gridSize=tilesRect.gridSize;localStorage.setItem("level_ed", JSON.stringify(project));mouse_down=false');
+bX+=80;      
+makeButton(4+bX,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));tilesRect.columns = tilesRect.sprite.width/tilesRect.gridSize;project.tColumns = tilesRect.columns;project.gridSize=tilesRect.gridSize;localStorage.setItem("level_ed", JSON.stringify(project));mouse_down=false');
 bX+=80;
 makeButton(4+bX,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mapRect.init();mouse_down=false');
 bX+=80;
@@ -738,6 +749,7 @@ function start(){
       mapRect.mapH = project.mapH;
       mapRect.mapG = project.gridSize;
       tilesRect.gridSize = project.gridSize
+      tilesRect.columns = project.tColumns;
     }
   }
 }
@@ -878,6 +890,7 @@ function loadTiles(){
           var fileData =  readerEvent.target.result
           tilesRect.sprite = draw_set_image(fileData)
           project.tileSet=tilesRect.sprite.src;
+          tilesRect.columns = tilesRect.sprite.width/tilesRect.gridSize;
           buttons[0].hilite=false
           localStorage.setItem("level_ed", JSON.stringify(project))
         };
@@ -983,7 +996,8 @@ function show_code(){
     if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode)}
     if(scriptMode==3){object_code=JSON.stringify(objects[i].name)}
       //SETS CODEIDE CODE
-      editor.setValue(object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n'));
+      let code = object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n')
+      editor.setValue(formatCode(code));
       //document.getElementById('codeIDE').value =object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
     }
   }
@@ -1195,8 +1209,27 @@ function getPixelColor(canvas, x, y) {
   return [pixelData[0], pixelData[1], pixelData[2]];
 }
 
-
-
+function formatCode(inputCode) {
+  // Split the code into lines
+  var lines = inputCode.split('\n');
+  // Define the number of spaces for one level of indentation
+  const spaces = 2;
+  // Initialize an indentation level trimmedLine.includes('{')  .join('\n') spaces = ' '.repeat(numberOfSpaces);
+    let Indent = 0;
+    let pre = ''
+  for(let i = 0 ; i < lines.length; i++){lines[i] = lines[i].trim()}
+    
+    for(let i = 0 ; i < lines.length; i++){
+      if(i>0){
+      if(lines[i-1].includes('{')){Indent+=spaces}
+      if(lines[i].includes('}')){Indent-=spaces}
+        
+      }
+    if(Indent>0){pre = ' '.repeat(Indent)}else{pre = ''}
+      lines[i] = pre+lines[i];
+    }
+    return lines.join('\n')
+  }
 </script>
 <script type='text/javascript' src='engine.js'></script>
 
