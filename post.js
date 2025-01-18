@@ -21,7 +21,7 @@ zzfxX=new(window.AudioContext||webkitAudioContext);
 //! ZzFXM (v2.0.3) | (C) Keith Clark | MIT | https://github.com/keithclark/ZzFXM
 zzfxM=(n,f,t,e=125)=>{let l,o,z,r,g,h,x,a,u,c,d,i,m,p,G,M=0,R=[],b=[],j=[],k=0,q=0,s=1,v={},w=zzfxR/e*60>>2;for(;s;k++)R=[s=a=d=m=0],t.map((e,d)=>{for(x=f[e][k]||[0,0,0],s|=!!f[e][k],G=m+(f[e][0].length-2-!a)*w,p=d==t.length-1,o=2,r=m;o<x.length+p;a=++o){for(g=x[o],u=o==x.length+p-1&&p||c!=(x[0]||0)|g|0,z=0;z<w&&a;z++>w-99&&u?i+=(i<1)/99:0)h=(1-i)*R[M++]/2||0,b[r]=(b[r]||0)-h*q+h,j[r]=(j[r++]||0)+h*q+h;g&&(i=g%1,q=x[1]||0,(g|=0)&&(R=v[[c=x[M=0]||0,g]]=v[[c,g]]||(l=[...n[c]],l[2]*=2**((g-12)/12),g>0?zzfxG(...l):[])))}m=G});return[b,j]}
 
-function bpmTimer(initialBpm, callback) {let bpm = initialBpm;let interval = 60000 / bpm;let nextTime = performance.now();let isRunning = true;function loop() {if (!isRunning) return;const now = performance.now();if (now >= nextTime) {callback();nextTime += interval;}if (nextTime < now) {nextTime = now + interval;}setTimeout(loop, nextTime - now);}function setBpm(newBpm) {bpm = newBpm;interval = 60000 / bpm;}function stop() {isRunning = false;}loop();return { setBpm, stop };}
+function bpmTimer(initialBpm, callback) {let bpm = initialBpm;let interval = 60000 / bpm;let nextTime = performance.now();let isRunning = true;function loop() {if (!isRunning) return;const now = performance.now();if (now >= nextTime) {callback();nextTime += interval;}if (nextTime < now) {nextTime = now + interval;}setTimeout(loop, nextTime - now);}function setBpm(newBpm) {bpm = newBpm;interval = 60000 / bpm;}function start() {isRunning = false;loop()}function stop() {isRunning = false;}loop();return { setBpm, start, stop };}
 
 
 canvas.width=0;
@@ -43,6 +43,7 @@ function load_map(m){
   mapH = m.mapH
   viewport = m.view
   gridSize = m.gridSize
+  columns = m.tColumns
   canvas.width=viewport.w;//mapW*gridSize;
   canvas.height=viewport.h;//mapH*gridSize;
   for(let i = 0; i <objects.length; i++){
@@ -67,8 +68,8 @@ function draw_map() {
     for (let x = startTileX; x < endTileX; x++) {
       if (tiles[y] && tiles[y][x] != -1) {
         let tId = tiles[y][x];
-        let sx = tId % 10 * gridSize;
-        let sy = Math.floor(tId / 10) * gridSize;
+        let sx = tId % columns * gridSize;
+        let sy = Math.floor(tId / columns) * gridSize;
         draw_image(
         tileset,
         x * gridSize - viewport.x, // Adjust by viewport
@@ -80,8 +81,8 @@ function draw_map() {
       }
       if (tiles2[y] && tiles2[y][x] != -1) {
         let tId = tiles2[y][x];
-        let sx = tId % 10 * gridSize;
-        let sy = Math.floor(tId / 10) * gridSize;
+        let sx = tId % columns * gridSize;
+        let sy = Math.floor(tId / columns) * gridSize;
         draw_image(
         tileset,
         x * gridSize - viewport.x, // Adjust by viewport
@@ -105,8 +106,8 @@ function draw_map() {
     let mapX = floor(me.x/gridSize);
     let mapY = floor(me.y/gridSize);
     let rot = me.rot;
-    let sx = tId % 10 * gridSize;
-    let sy = Math.floor(tId / 10) * gridSize;
+    let sx = tId % columns * gridSize;
+    let sy = Math.floor(tId / columns) * gridSize;
     let ox = (gridSize * me.w) / 2;
     let oy = (gridSize * me.h) / 2;
     
