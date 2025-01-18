@@ -177,6 +177,27 @@ function text_fit(text,width){
     }
   }
 }
+function drawTile(tId,x,y,w,h){
+if(w==null){w=gridSize}
+if(h==null){h=gridSize}
+        x-= viewport.x;
+        y-= viewport.y;
+  let sx = tId % columns * gridSize;
+  let sy = Math.floor(tId / columns) * gridSize;
+  draw_image(tileset,x,y,w,h,0,0,0,sx,sy,gridSize, gridSize
+  );
+}
+function lerp(inp, target, rate) {
+  return inp + (target - inp) * rate;
+};
+function easeIn(inp, target, rate) {
+  let diff = target - inp;
+  return inp + diff * (Math.pow(rate, 2));
+};
+function easeOut(inp, target, rate) {
+  let diff = target - inp;
+  return inp + diff * (1 - Math.exp(-rate));
+};
 function makeName(){
   var name=null
   for(let index=0; index<100000; index++){
