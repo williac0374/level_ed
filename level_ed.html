@@ -627,9 +627,8 @@ tilesRect = {
             selected.w=gs;
             selected.h=gs;
           }
+
           if(mouse_check_pressed()){
-			  //this.sorX
-			  //this.sorY
             selected.x=mx;
             selected.y=my;
             selected.w=gs;
@@ -637,14 +636,12 @@ tilesRect = {
             selected.cellX=round((mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale))))+(this.sorX/this.gridSize)
             selected.cellY=round((my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale))))+(this.sorY/this.gridSize)
             selected.tId = floor((selected.cellY*this.columns)+selected.cellX)
+            document.title = selected.tId;
             cur_value = this.sprite;
           }
         }
          
         let tId = ((selected.cellY*this.columns)+selected.cellX)
-        document.title = 'selected.tId: '+selected.tId
-        document.title += '   global tId: '+tId
-        document.title += '   this.columns' + this.columns
       }else{
         draw_set_color(0,0,0);
         draw_centered_text(this.x+(this.w/2), this.y+(this.h/2), "NO TILESET LOADED", this.w/20)
