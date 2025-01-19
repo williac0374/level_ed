@@ -198,6 +198,24 @@ function easeOut(inp, target, rate) {
   let diff = target - inp;
   return inp + diff * (1 - Math.exp(-rate));
 };
+function view_follow(ob,margin,intensity){
+   if(ob.x>viewport.x+viewport.w*(1-margin)){
+    viewport.x=easeIn(viewport.x, ob.x-viewport.w*(1-margin), intensity)
+  }
+  if(ob.x<viewport.x+viewport.w*margin){
+    viewport.x=easeIn(viewport.x, ob.x-viewport.w*margin, intensity)
+  }
+  if(ob.y>viewport.y+viewport.h*(1-margin)){
+    
+    viewport.y=easeIn(viewport.y, ob.y-viewport.h*(1-margin),intensity)
+  }
+  if(ob.y<viewport.y+viewport.h*margin){
+    viewport.y=easeIn(viewport.y, ob.y-viewport.h*margin, intensity)
+  }
+  // keeps camera inside level
+  viewport.x = clamp(viewport.x, 0, mapW*gridSize-viewport.w)
+  viewport.y = clamp(viewport.y, 0, mapH*gridSize-viewport.h)
+}
 function makeName(){
   var name=null
   for(let index=0; index<100000; index++){
@@ -244,19 +262,6 @@ function once(name,code){
 function get_cell(inp){
   return round(inp/gridSize);
 }
-
-function view_follow(obj,margin,speed){
-  //horizontal
-if(obj.x>viewport.x+viewport.w*(margin/100)){viewport.x+=speed}
-if(obj.x<viewport.x+viewport.w*(((100-margin)/100))){viewport.x-=speed}
-  viewport.x=clamp(viewport.x, 0, mapW*gridSize-viewport.w)
-  
-  //vertical
-if(obj.y>viewport.y+viewport.h*(margin/100)){viewport.y+=speed}
-if(obj.y<viewport.y+viewport.h*(((100-margin)/100))){viewport.y-=speed}
-  viewport.y=clamp(viewport.y, 0, mapH*gridSize-viewport.h)
-}
-
 
 
 function start(){
