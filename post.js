@@ -136,7 +136,14 @@ function draw_map() {
   }
 }
 
-
+function hit(me,other){
+  
+  if(other!=null && point_distance(me.x,me.y,other.x,other.y)<32){
+    return true
+  }else{
+    return false
+  }
+}
 function place_free(passableIDs, x, y, w, h, map) {
   const hits = getOverlappingTiles(x, y, w, h, map, gridSize);
   
