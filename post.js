@@ -213,8 +213,8 @@ function view_follow(ob,margin,intensity){
     viewport.y=easeIn(viewport.y, ob.y-viewport.h*margin, intensity)
   }
   // keeps camera inside level
-  viewport.x = clamp(viewport.x, 0, mapW*gridSize-viewport.w)
-  viewport.y = clamp(viewport.y, 0, mapH*gridSize-viewport.h)
+  viewport.x = round(clamp(viewport.x, 0, mapW*gridSize-viewport.w))
+  viewport.y = round(clamp(viewport.y, 0, mapH*gridSize-viewport.h))
 }
 function makeName(){
   var name=null
