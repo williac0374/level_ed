@@ -254,6 +254,8 @@ mapRect = {
   h:canvas.height-20,
   mapX:0,
   mapY:menuRect.h,
+  offX:0,
+  offY:0,
   mapW:10,
   mapH:10,
   mapG:16,
@@ -359,7 +361,23 @@ mapRect = {
     if(keyboard_check(vk_r)){r=1};
     if(keyboard_check(vk_v)){v=1};
     if(keyboard_check(vk_s)){s=1};
-      
+    if(keyboard_check_pressed(vk_space)){
+		this.offX = mouse_x - this.mapX
+		this.offY = mouse_y - this.mapY
+	}
+	if(keyboard_check(vk_space)){
+		this.mapX = mouse_x - this.offX
+		this.mapY = mouse_y - this.offY
+		if(keyboard_check_pressed(vk_backspace)){
+		this.mapX = 0;
+		this.mapY = 0;
+		this.offX = mouse_x - this.mapX
+		this.offY = mouse_y - this.mapY
+		}
+	}
+
+	
+       
       if(w+h+r+v>0){
         if(v==0){
           for(let i = objects.length-1; i>=0; i--){
@@ -568,7 +586,21 @@ tilesRect = {
       this.h = canvas.height-menuRect.h;
       if(this.sprite!=null){
         if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
-		   if(keyboard_check_pressed(vk_up)){this.sorY -= this.gridSize}
+			if(keyboard_check_pressed(vk_space)){
+				this.offX = mouse_x - this.sorX; 
+				this.offY = mouse_y - this.sorY; 
+	        }
+			if(keyboard_check(vk_space)){
+				this.sorX = snap(mouse_x - this.offX,this.gridSize)
+				this.sorY = snap(mouse_y - this.offY,this.gridSize)
+				if(keyboard_check_pressed(vk_backspace)){
+					this.sorX = 0;
+				    this.sorY = 0;
+				    this.offX = mouse_x - this.sorX; 
+				    this.offY = mouse_y - this.sorY; 
+				}
+			}
+		  if(keyboard_check_pressed(vk_up)){this.sorY -= this.gridSize}
 		  if(keyboard_check_pressed(vk_down)){this.sorY += this.gridSize}
 		  if(keyboard_check_pressed(vk_left)){this.sorX -= this.gridSize}
 		  if(keyboard_check_pressed(vk_right)){this.sorX += this.gridSize} 
