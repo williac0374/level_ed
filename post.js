@@ -49,6 +49,7 @@ function load_map(m){
   for(let i = 0; i <objects.length; i++){
     objects[i].x = objects[i].mapX*gridSize;
     objects[i].y = objects[i].mapY*gridSize;
+    objects[i].type = 'basic';
     objects[i].firstRun=true;
     objects[i].onceCode="";
     objects[i].kill=false;
@@ -103,8 +104,8 @@ function draw_map() {
     let y = me.y - viewport.y; // Adjust by viewport
     let w = me.w * gridSize;
     let h = me.h * gridSize;
-    let mapX = floor(me.x/gridSize);
-    let mapY = floor(me.y/gridSize);
+    me.mapX = (me.x/gridSize).toFixed(1)
+    me.mapY = (me.y/gridSize).toFixed(1)
     let rot = me.rot;
     let sx = tId % columns * gridSize;
     let sy = Math.floor(tId / columns) * gridSize;
