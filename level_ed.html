@@ -78,6 +78,7 @@ editor.on("change",function(cm,change){
     if(scriptMode==1){objects[i].loopCode=editor.getValue()}
     if(scriptMode==2){objects[i].drawCode=editor.getValue()}
     if(scriptMode==3){objects[i].name=editor.getValue()}
+    if(scriptMode==4){objects[i].tId=editor.getValue()}
     }
   }
 });
@@ -115,16 +116,17 @@ setTimeout(function(){
   resizeCanvas();
   setTimeout(function(){
     makeButton(tilesRect.x+4,4,'NAME','scriptMode=3;show_code();mouse_down=false');
-    makeButton(tilesRect.x+64,4,'START','scriptMode=0;show_code();mouse_down=false');
-    makeButton(tilesRect.x+124,4,'LOOP','scriptMode=1;show_code();mouse_down=false');
-    makeButton(tilesRect.x+184,4,'DRAW','scriptMode=2;show_code();mouse_down=false');
-    makeButton(tilesRect.x+244,4,'HELP','helpBox();mouse_down=false');
-    makeButton(tilesRect.x+304,4,'LOAD','loadScript();mouse_down=false');
-    makeButton(tilesRect.x+364,4,'SAVE','exportScript();mouse_down=false');
+    makeButton(tilesRect.x+64,4,'tId','scriptMode=4;show_code();mouse_down=false');
+    makeButton(tilesRect.x+124,4,'START','scriptMode=0;show_code();mouse_down=false');
+    makeButton(tilesRect.x+184,4,'LOOP','scriptMode=1;show_code();mouse_down=false');
+    makeButton(tilesRect.x+244,4,'DRAW','scriptMode=2;show_code();mouse_down=false');
+    makeButton(tilesRect.x+304,4,'HELP','helpBox();mouse_down=false');
+    makeButton(tilesRect.x+364,4,'LOAD','loadScript();mouse_down=false');
+    makeButton(tilesRect.x+424,4,'SAVE','exportScript();mouse_down=false');
     setTimeout(function(){
       var tick=1
       buttons.forEach(button => {
-        if(button.label!='NAME' && button.label!='START' && button.label!='LOOP' && button.label!='DRAW' && button.label!='HELP'&& button.label!='LOAD'&& button.label!='SAVE'){
+        if(button.label!='NAME' &&button.label!='tId' && button.label!='START' && button.label!='LOOP' && button.label!='DRAW' && button.label!='HELP'&& button.label!='LOAD'&& button.label!='SAVE'){
           button.tsize=text_fit(button.label,button.w-20)
         }else{
           button.tsize=text_fit(button.label,button.w-70)
@@ -146,7 +148,7 @@ setTimeout(function(){
 //buttons
 window.addEventListener('resize', resizeCanvas);
 function reset(){
-	project = {tileSet:null,objects:[],codeSize:12,tColumns:10,view:{x:0,y:0,w:120,h:120}};
+	project = {title:'none',tileSet:null,objects:[],codeSize:12,tColumns:10,view:{x:0,y:0,w:120,h:120}};
 	mode = 2;
 	tiles = [];
 	tiles2 = [];
@@ -163,6 +165,8 @@ function reset(){
 	codeCursor=null
 	line = ''
 	scriptMode = 3;
+	title='none'
+	document.title = title
 }
 reset();
 menuRect = {
@@ -186,7 +190,7 @@ menuRect = {
       }
     }
     if(this.mode==1){
-      for(let i = 12; i < 19; i++){
+      for(let i = 12; i < 20; i++){
         buttons[i].loop();
         buttons[i].draw();
         draw_set_color(255,255,255)
@@ -363,6 +367,8 @@ mapRect = {
       var shft = 0;
       var d = 0;
       var p = 0;
+      var e = 0;
+      var ikey = 0;
     if(keyboard_check(vk_w)){w=1};
     if(keyboard_check(vk_h)){h=1};
     if(keyboard_check(vk_r)){r=1};
@@ -370,7 +376,9 @@ mapRect = {
     if(keyboard_check(vk_s)){s=1};
     if(keyboard_check(vk_shift)){shft=1};
     if(keyboard_check(vk_d)){d=1};
+    if(keyboard_check(vk_e)){e=1};
     if(keyboard_check(vk_p)){p=1};
+    if(keyboard_check(vk_i)){ikey=1};
     if(keyboard_check_pressed(vk_space)){
 		this.offX = mouse_x - this.mapX
 		this.offY = mouse_y - this.mapY
@@ -388,13 +396,24 @@ mapRect = {
 
 	
        
-      if(w+h+r+v+shft+d+p>0){
+      if(w+h+r+v+shft+d+p+e+ikey>0){
         if(v==0){
           for(let i = objects.length-1; i>=0; i--){
             if(objects[i].sel==true && document.getElementById("customTextBox")==null){
             if(w>0){objects[i].w+=wheelDir*0.1}
             if(h>0){objects[i].h+=wheelDir*0.1}
             if(r>0){objects[i].rot+=wheelDir*5}
+            //
+            if(shft+e==2){ // exports currently selected object
+				exportObject(objects[i])
+				objects[i].sel=false
+			}	
+			if(shft+ikey==2){ // imports object into currently selected object
+				objects[i].sel=false
+				hostOb = i
+				loadOb();
+				
+			}
             if(shft+d==2){ // copies currently selected object
                 duplicate = {
                   name:'no_name',
@@ -471,7 +490,7 @@ mapRect = {
       if(mouse_check()){
         if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
           if(my>this.mapY && my < this.mapY+this.mapH*this.mapG){
-            document.title = 'mapCellX : '+mapCellX
+            
             if(v>0){
               if(s==0){
                 project.view.x = mapCellX*tilesRect.gridSize;
@@ -689,7 +708,12 @@ tilesRect = {
             selected.w=gs;
             selected.h=gs;
           }
-
+           ////////////////////////////////////////////////////////
+           // displays tId of tilemap hovered over
+            let tX=round((mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale))))+(this.sorX/this.gridSize)
+            let tY=round((my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale))))+(this.sorY/this.gridSize)
+            document.title = 'tId: '+floor((tY*this.columns)+tX)
+           ////////////////////////////////////////////
           if(mouse_check_pressed()){
             selected.x=mx;
             selected.y=my;
@@ -786,7 +810,7 @@ function makeButton(x,y,label,funct){
       this.x = menuRect.x+x;
       this.y = menuRect.y+y;
       this.w = 80;
-    if(this.label=='NAME'||this.label=='START'||this.label=='LOOP'||this.label=='DRAW'||this.label=='HELP'||this.label=='LOAD'||this.label=='SAVE'){this.w = 60}
+    if(this.label=='NAME'||this.label=='tId'||this.label=='START'||this.label=='LOOP'||this.label=='DRAW'||this.label=='HELP'||this.label=='LOAD'||this.label=='SAVE'){this.w = 60}
       this.h = menuRect.h-8;
       // hover and click
       if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){// hover
@@ -841,6 +865,7 @@ function start(){
       mapRect.mapG = project.gridSize;
       tilesRect.gridSize = project.gridSize
       tilesRect.columns = project.tColumns;
+      title = project.title;
     }
   }
 }
@@ -915,7 +940,10 @@ function loop(){ //;vk_all_keys=[]
   mapRect.loop();
   menuRect.loop();
   tilesRect.loop();
-  document.title=objects.length
+  if(mouse_x<canvas.width/2){
+	  document.title = title
+  }
+  
 }
 
 
@@ -996,13 +1024,13 @@ function loadTiles(){
 }
 
 function saveProject() {
-  
+  localStorage.setItem("level_ed", JSON.stringify(project))
   var content = JSON.stringify(project)
 const blob = new Blob([content], { type: "text/json" }); // Create a Blob object with the JS content
   const url = URL.createObjectURL(blob); // Create a URL for the Blob
   const link = document.createElement("a");
   link.href = url;
-  link.download = "map.json"; // Set the filename
+  link.download = title; // Set the filename
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -1030,6 +1058,19 @@ const blob = new Blob([content], { type: "text/javascript" }); // Create a Blob 
   const link = document.createElement("a");
   link.href = url;
   link.download = "map.js"; // Set the filename
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+function exportObject(ob) {
+  // GETS CODEIDE CURRENT TEXT
+  var content = JSON.stringify(ob)
+const blob = new Blob([content], { type: "text/json" }); // Create a Blob object with the JS content
+  const url = URL.createObjectURL(blob); // Create a URL for the Blob
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "object.json"; // Set the filename
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -1072,9 +1113,32 @@ function load(){
         mapRect.mapW =  project.mapW;
         mapRect.mapH = project.mapH;
         document.title = file.name
-        
+        title = file.name
+        project.title = title
         buttons[0].hilite=false
       };
+      reader.readAsText(file);  // Read the file content as text
+    } else {
+      alert('Please select a valid JSON file');
+    }
+  });
+  document.getElementById('fileInput').click();
+}
+function loadOb(){
+  document.getElementById('fileInput').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/json') {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileContent = e.target.result;
+        impOb = JSON.parse(fileContent);  
+        objects[hostOb].startCode=impOb.startCode
+        objects[hostOb].loopCode=impOb.loopCode
+        objects[hostOb].drawCode=impOb.drawCode
+        objects[hostOb].w=impOb.w
+        objects[hostOb].h=impOb.h
+        objects[hostOb].rot=impOb.rot
+         };
       reader.readAsText(file);  // Read the file content as text
     } else {
       alert('Please select a valid JSON file');
@@ -1089,6 +1153,7 @@ function show_code(){
     if(scriptMode==1){object_code=JSON.stringify(objects[i].loopCode)}
     if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode)}
     if(scriptMode==3){object_code=JSON.stringify(objects[i].name)}
+     if(scriptMode==4){object_code=JSON.stringify(objects[i].tId)}
       //SETS CODEIDE CODE
       let code = object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n')
       editor.setValue(formatCode(code));
@@ -1126,6 +1191,7 @@ textarea.style.height = `${height}px`;
       if(scriptMode==1){objects[i].loopCode=this.value}
       if(scriptMode==2){objects[i].drawCode=this.value}
       if(scriptMode==3){objects[i].name=this.value}
+      if(scriptMode==4){objects[i].tId=this.value}
       }
     }
   };
@@ -1136,6 +1202,7 @@ textarea.style.height = `${height}px`;
       if(scriptMode==1){objects[i].loopCode=this.value}
       if(scriptMode==2){objects[i].drawCode=this.value}
       if(scriptMode==3){objects[i].name=this.value}
+      if(scriptMode==4){objects[i].tId=this.value}
       }
     }
   };
