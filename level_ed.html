@@ -79,6 +79,8 @@ editor.on("change",function(cm,change){
     if(scriptMode==2){objects[i].drawCode=editor.getValue()}
     if(scriptMode==3){objects[i].name=editor.getValue()}
     if(scriptMode==4){objects[i].tId=parseInt(editor.getValue())}
+    if(scriptMode==5){project.gameCode=editor.getValue()}
+    //project.gameCode
     }
   }
 });
@@ -93,6 +95,7 @@ editor.on('blur', () => {
     if(scriptMode==2){objects[i].drawCode=editor.getValue()}
     if(scriptMode==3){objects[i].name=editor.getValue()}
     if(scriptMode==4){objects[i].tId=parseInt(editor.getValue())}
+    if(scriptMode==5){project.gameCode=editor.getValue()}
     }
   }
 	coding=false;
@@ -132,10 +135,11 @@ setTimeout(function(){
     makeButton(tilesRect.x+304,4,'HELP','helpBox();mouse_down=false');
     makeButton(tilesRect.x+364,4,'LOAD','loadScript();mouse_down=false');
     makeButton(tilesRect.x+424,4,'SAVE','exportScript();mouse_down=false');
+    makeButton(tilesRect.x+484,4,'Gcode','scriptMode=5;show_code();mouse_down=false');
     setTimeout(function(){
       var tick=1
       buttons.forEach(button => {
-        if(button.label!='NAME' &&button.label!='tId' && button.label!='START' && button.label!='LOOP' && button.label!='DRAW' && button.label!='HELP'&& button.label!='LOAD'&& button.label!='SAVE'){
+        if(button.label!='NAME' &&button.label!='tId' && button.label!='START' && button.label!='LOOP' && button.label!='DRAW' && button.label!='HELP'&& button.label!='LOAD'&& button.label!='SAVE'&& button.label!='Gcode'){
           button.tsize=text_fit(button.label,button.w-20)
         }else{
           button.tsize=text_fit(button.label,button.w-70)
@@ -157,7 +161,7 @@ setTimeout(function(){
 //buttons
 window.addEventListener('resize', resizeCanvas);
 function reset(){
-	project = {title:'none',tileSet:null,objects:[],codeSize:12,tColumns:10,view:{x:0,y:0,w:120,h:120}};
+	project = {title:'none',tileSet:null,objects:[],gameCode:"function hello(){'hello world!!!'}",codeSize:12,tColumns:10,view:{x:0,y:0,w:120,h:120}};
 	mode = 2;
 	tiles = [];
 	tiles2 = [];
@@ -199,7 +203,7 @@ menuRect = {
       }
     }
     if(this.mode==1){
-      for(let i = 12; i < 20; i++){
+      for(let i = 12; i < 21; i++){
         buttons[i].loop();
         buttons[i].draw();
         draw_set_color(255,255,255)
@@ -237,12 +241,21 @@ menuRect = {
       }
       draw_set_color(128,0,128);
       draw_set_linewidth(8);
+      if(scriptMode==5){
+        buttons[12].hilite=false;
+        buttons[13].hilite=false;
+        buttons[14].hilite=false;
+        buttons[15].hilite=false;
+        buttons[16].hilite=false;
+        buttons[20].hilite=true;
+      }
       if(scriptMode==4){
         buttons[12].hilite=false;
         buttons[13].hilite=true;
         buttons[14].hilite=false;
         buttons[15].hilite=false;
         buttons[16].hilite=false;
+        buttons[20].hilite=false;
       }
       if(scriptMode==3){
         buttons[12].hilite=true;
@@ -250,6 +263,7 @@ menuRect = {
         buttons[14].hilite=false;
         buttons[15].hilite=false;
         buttons[16].hilite=false;
+        buttons[20].hilite=false;
       }
       if(scriptMode==0){
         buttons[12].hilite=false;
@@ -257,6 +271,7 @@ menuRect = {
         buttons[14].hilite=true;
         buttons[15].hilite=false;
         buttons[16].hilite=false;
+        buttons[20].hilite=false;
       }
       if(scriptMode==1){
         buttons[12].hilite=false;
@@ -264,6 +279,7 @@ menuRect = {
         buttons[14].hilite=false;
         buttons[15].hilite=true;
         buttons[16].hilite=false;
+        buttons[20].hilite=false;
       }
       if(scriptMode==2){
         buttons[12].hilite=false;
@@ -271,6 +287,7 @@ menuRect = {
         buttons[14].hilite=false;
         buttons[15].hilite=false;
         buttons[16].hilite=true;
+        buttons[20].hilite=false;
       }
     }
   }
@@ -617,6 +634,7 @@ mapRect = {
                   if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
                   if(scriptMode==3){object_code=JSON.stringify(objects[i].name).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
                   if(scriptMode==4){object_code=JSON.stringify(objects[i].tId).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+                  if(scriptMode==5){object_code=JSON.stringify(project.gameCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
                     //SHOWS EDITOR AND SETS INITIAl VALUE
                     document.getElementById("editor").style.display='block'
                     editor.setValue(object_code);
@@ -1182,13 +1200,15 @@ function show_code(){
     if(scriptMode==1){object_code=JSON.stringify(objects[i].loopCode)}
     if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode)}
     if(scriptMode==3){object_code=JSON.stringify(objects[i].name)}
-     if(scriptMode==4){object_code=JSON.stringify(objects[i].tId)}
+    if(scriptMode==4){object_code=JSON.stringify(objects[i].tId)}
+    if(scriptMode==5){object_code=JSON.stringify(project.gameCode)} 
       //SETS CODEIDE CODE
       let code = object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n')
+      document.getElementById("editor").style.display='block'
       editor.setValue(formatCode(code));
-      //document.getElementById('codeIDE').value =object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+      
     }
-  }
+   }
 }
 
 function test(){
