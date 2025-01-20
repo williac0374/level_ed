@@ -54,7 +54,7 @@ function load_map(m){
     objects[i].onceCode="";
     objects[i].kill=false;
   }
-  
+
 }
 
 function draw_map() {
@@ -95,7 +95,6 @@ function draw_map() {
       }
     }
   }
-  
   // Draw objects within the viewport
   for (let i = objects.length - 1; i >= 0; i--) {
     let me = objects[i];
@@ -119,7 +118,6 @@ function draw_map() {
     ) {
       continue;
     }
-    
     if (me.firstRun == true) {
       me.firstRun = false;
       eval(me.startCode);
