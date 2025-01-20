@@ -155,6 +155,7 @@ function reset(){
 	object_code=''
 	buttons = [];
 	b_width = 5;
+	duplicate = {}
 	cur_value = null;
 	codeCursor=null
 	line = ''
@@ -356,11 +357,17 @@ mapRect = {
       var r = 0;
       var v = 0;
       var s = 0;
+      var shft = 0;
+      var d = 0;
+      var p = 0;
     if(keyboard_check(vk_w)){w=1};
     if(keyboard_check(vk_h)){h=1};
     if(keyboard_check(vk_r)){r=1};
     if(keyboard_check(vk_v)){v=1};
     if(keyboard_check(vk_s)){s=1};
+    if(keyboard_check(vk_shift)){shft=1};
+    if(keyboard_check(vk_d)){d=1};
+    if(keyboard_check(vk_p)){p=1};
     if(keyboard_check_pressed(vk_space)){
 		this.offX = mouse_x - this.mapX
 		this.offY = mouse_y - this.mapY
@@ -378,14 +385,41 @@ mapRect = {
 
 	
        
-      if(w+h+r+v>0){
+      if(w+h+r+v+shft+d+p>0){
         if(v==0){
           for(let i = objects.length-1; i>=0; i--){
             if(objects[i].sel==true && document.getElementById("customTextBox")==null){
             if(w>0){objects[i].w+=wheelDir*0.1}
             if(h>0){objects[i].h+=wheelDir*0.1}
             if(r>0){objects[i].rot+=wheelDir*5}
-              
+            if(shft+d==2){ // copies currently selected object
+                duplicate = {
+                  name:'no_name',
+                  tId:objects[i].tId,
+                  x:objects[i].x,
+                  y:objects[i].y,
+                  mapX:objects[i].mapX,
+                  mapY:objects[i].mapY,
+                  w:1,
+                  h:1,
+                  rot:0,
+                  ox:0,
+                  oy:0,
+                  startCode:objects[i].startCode,
+                  loopCode:objects[i].loopCode,
+                  drawCode:objects[i].drawCode,
+                  sel:false
+                }				
+				selected.tId = duplicate.tId
+				selected.cellX = selected.tId%tilesRect.columns;
+				selected.cellY = floor(selected.tId/tilesRect.columns);
+				cur_value = tilesRect.sprite
+				
+				duplicate.name = makeName();
+				console.log(duplicate)
+				objects[i].sel=false
+			} 
+
             }
           }
           project.objects = objects
@@ -425,6 +459,7 @@ mapRect = {
         my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
       }
       cursor(mx,my,gs,gs,cur_value)
+
       mapCellX = 0;
       mapCellY = 0;
     if((mx-this.mapX-4)>0){mapCellX = (mx-this.mapX-4)/this.mapG}
@@ -460,6 +495,7 @@ mapRect = {
                 project.tiles2[mapCellY][mapCellX]=selected.tId;
               }
               if(mode==2){
+				  if(duplicate=={}){
                 let temp = {
                   name:makeName(),
                   tId:selected.tId,
@@ -481,6 +517,29 @@ mapRect = {
                 project.objects = objects;
                 mouse_down=false;
                 console.log(objects)
+			}else{
+				let temp = {
+                  name:makeName(),
+                  tId:duplicate.tId,
+                  x:mx,
+                  y:my,
+                  mapX:mapCellX+0.5,
+                  mapY:mapCellY+0.5,
+                  w:1,
+                  h:1,
+                  rot:0,
+                  ox:0,
+                  oy:0,
+                  startCode:duplicate.startCode,
+                  loopCode:duplicate.loopCode,
+                  drawCode:duplicate.drawCode,
+                  sel:false
+                }
+                objects.push(temp);
+                //duplicate={};
+				localStorage.setItem("level_ed", JSON.stringify(project))
+				mouse_down=false
+			}
               }
               localStorage.setItem("level_ed", JSON.stringify(project))
             }else{
@@ -839,6 +898,7 @@ function loop(){ //;vk_all_keys=[]
   // CHECKS IF CODEEDITOR HAS  FOCUS  TO KEEP FROM WEIRD BEHAVIOUR FROM INPUT (MOVING OBJECTS ECT)
   if(keyboard_check_pressed(vk_delete)&&mouse_x<window.innerWidth/2&&document.activeElement!=document.getElementById("codeIDE")){
     selected.tId=-1;
+    duplicate = {}
     cur_value=null;
     for(let i = objects.length-1; i>=0; i--){
     if(objects[i].sel==true&&coding==false){
@@ -851,6 +911,7 @@ function loop(){ //;vk_all_keys=[]
   mapRect.loop();
   menuRect.loop();
   tilesRect.loop();
+  document.title=objects.length
 }
 
 
