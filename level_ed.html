@@ -56,6 +56,8 @@ canvas {
 <canvas id="canvas"></canvas>
 <div id='editor'></div>
 <script>
+	duplicate={}
+	duplicating=false
 	//localStorage.removeItem("level_ed");window.close()
 // Initialize CodeMirror
 var editor = CodeMirror(document.getElementById("editor"), {
@@ -156,6 +158,7 @@ function reset(){
 	buttons = [];
 	b_width = 5;
 	duplicate = {}
+	duplicating=false
 	cur_value = null;
 	codeCursor=null
 	line = ''
@@ -409,7 +412,8 @@ mapRect = {
                   loopCode:objects[i].loopCode,
                   drawCode:objects[i].drawCode,
                   sel:false
-                }				
+                }	
+                duplicating=true			
 				selected.tId = duplicate.tId
 				selected.cellX = selected.tId%tilesRect.columns;
 				selected.cellY = floor(selected.tId/tilesRect.columns);
@@ -495,29 +499,27 @@ mapRect = {
                 project.tiles2[mapCellY][mapCellX]=selected.tId;
               }
               if(mode==2){
-				  if(duplicate=={}){
-                let temp = {
-                  name:makeName(),
-                  tId:selected.tId,
-                  x:mx,
-                  y:my,
-                  mapX:mapCellX+0.5,
-                  mapY:mapCellY+0.5,
-                  w:1,
-                  h:1,
-                  rot:0,
-                  ox:0,
-                  oy:0,
-                  startCode:'',
-                  loopCode:'',
-                  drawCode:'',
-                  sel:false
-                }
-                objects.push(temp);
-                project.objects = objects;
-                mouse_down=false;
-                console.log(objects)
-			}else{
+				  if(duplicating==false){
+					let temp = {
+					  name:makeName(),
+					  tId:selected.tId,
+					  x:mx,
+					  y:my,
+					  mapX:mapCellX+0.5,
+					  mapY:mapCellY+0.5,
+					  w:1,
+					  h:1,
+					  rot:0,
+					  ox:0,
+					  oy:0,
+					  startCode:"",
+					  loopCode:"",
+					  drawCode:"",
+					  sel:false
+					}
+					objects.push(temp);
+					project.objects = objects;
+                }else{
 				let temp = {
                   name:makeName(),
                   tId:duplicate.tId,
@@ -540,6 +542,7 @@ mapRect = {
 				localStorage.setItem("level_ed", JSON.stringify(project))
 				mouse_down=false
 			}
+			mouse_down=false
               }
               localStorage.setItem("level_ed", JSON.stringify(project))
             }else{
@@ -898,7 +901,8 @@ function loop(){ //;vk_all_keys=[]
   // CHECKS IF CODEEDITOR HAS  FOCUS  TO KEEP FROM WEIRD BEHAVIOUR FROM INPUT (MOVING OBJECTS ECT)
   if(keyboard_check_pressed(vk_delete)&&mouse_x<window.innerWidth/2&&document.activeElement!=document.getElementById("codeIDE")){
     selected.tId=-1;
-    duplicate = {}
+    duplicate = {};
+    duplicating = false;
     cur_value=null;
     for(let i = objects.length-1; i>=0; i--){
     if(objects[i].sel==true&&coding==false){
