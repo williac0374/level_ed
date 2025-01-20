@@ -78,7 +78,7 @@ editor.on("change",function(cm,change){
     if(scriptMode==1){objects[i].loopCode=editor.getValue()}
     if(scriptMode==2){objects[i].drawCode=editor.getValue()}
     if(scriptMode==3){objects[i].name=editor.getValue()}
-    if(scriptMode==4){objects[i].tId=editor.getValue()}
+    if(scriptMode==4){objects[i].tId=parseInt(editor.getValue())}
     }
   }
 });
@@ -86,6 +86,15 @@ selectedRange = null;
 selection = null
 coding=false
 editor.on('blur', () => {
+	  for(let i = objects.length-1; i>=0; i--){
+    if(objects[i].sel==true){
+    if(scriptMode==0){objects[i].startCode=editor.getValue()}
+    if(scriptMode==1){objects[i].loopCode=editor.getValue()}
+    if(scriptMode==2){objects[i].drawCode=editor.getValue()}
+    if(scriptMode==3){objects[i].name=editor.getValue()}
+    if(scriptMode==4){objects[i].tId=parseInt(editor.getValue())}
+    }
+  }
 	coding=false;
   selection = editor.getSelection();
   if (selection) {
@@ -228,29 +237,40 @@ menuRect = {
       }
       draw_set_color(128,0,128);
       draw_set_linewidth(8);
+      if(scriptMode==4){
+        buttons[12].hilite=false;
+        buttons[13].hilite=true;
+        buttons[14].hilite=false;
+        buttons[15].hilite=false;
+        buttons[16].hilite=false;
+      }
       if(scriptMode==3){
         buttons[12].hilite=true;
         buttons[13].hilite=false;
         buttons[14].hilite=false;
         buttons[15].hilite=false;
+        buttons[16].hilite=false;
       }
       if(scriptMode==0){
-        buttons[12].hilite=false;
-        buttons[13].hilite=true;
-        buttons[14].hilite=false;
-        buttons[15].hilite=false;
-      }
-      if(scriptMode==1){
         buttons[12].hilite=false;
         buttons[13].hilite=false;
         buttons[14].hilite=true;
         buttons[15].hilite=false;
+        buttons[16].hilite=false;
+      }
+      if(scriptMode==1){
+        buttons[12].hilite=false;
+        buttons[13].hilite=false;
+        buttons[14].hilite=false;
+        buttons[15].hilite=true;
+        buttons[16].hilite=false;
       }
       if(scriptMode==2){
         buttons[12].hilite=false;
         buttons[13].hilite=false;
         buttons[14].hilite=false;
-        buttons[15].hilite=true;
+        buttons[15].hilite=false;
+        buttons[16].hilite=true;
       }
     }
   }
@@ -588,6 +608,7 @@ mapRect = {
                   if(scriptMode==1){object_code=JSON.stringify(objects[i].loopCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
                   if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
                   if(scriptMode==3){object_code=JSON.stringify(objects[i].name).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+                  if(scriptMode==4){object_code=JSON.stringify(objects[i].tId).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
                     //SHOWS EDITOR AND SETS INITIAl VALUE
                     document.getElementById("editor").style.display='block'
                     editor.setValue(object_code);
@@ -1044,7 +1065,7 @@ const blob = new Blob([content], { type: "text/html" }); // Create a Blob object
   const url = URL.createObjectURL(blob); // Create a URL for the Blob
   const link = document.createElement("a");
   link.href = url;
-  link.download = "game.html"; // Set the filename
+  link.download = title.split('.')[0]+".html"; // Set the filename
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -1161,64 +1182,6 @@ function show_code(){
     }
   }
 }
-textarea = null;
-function text_area(left, top, width, height, initial_text) {
-  // Create a textarea element
-  textarea = document.createElement('textarea');
-  
-  // Set styles for the textarea
-  textarea.id = 'codeIDE'
-  textarea.style.position = 'absolute';
-textarea.style.left = `${left}px`;
-textarea.style.top = `${top}px`;
-textarea.style.width = `${width}px`;
-textarea.style.height = `${height}px`;
-  textarea.style.backgroundColor = 'black';
-  textarea.style.color = 'white';
-  textarea.style.border = 'none';
-  textarea.style.outline = 'none';
-  textarea.style.resize = 'none';
-  textarea.style.padding = '10px';
-  textarea.style.fontFamily = 'monospace';
-  textarea.style.fontSize = project.codeSize+'px';
-  textarea.style.whiteSpace = "pre-wrap";
-  const formattedString = initial_text.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
-  textarea.value = formattedString
-  textarea.onchange = function(){
-    for(let i = objects.length-1; i>=0; i--){
-      if(objects[i].sel==true){
-      if(scriptMode==0){objects[i].startCode=this.value}
-      if(scriptMode==1){objects[i].loopCode=this.value}
-      if(scriptMode==2){objects[i].drawCode=this.value}
-      if(scriptMode==3){objects[i].name=this.value}
-      if(scriptMode==4){objects[i].tId=this.value}
-      }
-    }
-  };
-  textarea.oninput = function(){
-    for(let i = objects.length-1; i>=0; i--){
-      if(objects[i].sel==true){
-      if(scriptMode==0){objects[i].startCode=this.value}
-      if(scriptMode==1){objects[i].loopCode=this.value}
-      if(scriptMode==2){objects[i].drawCode=this.value}
-      if(scriptMode==3){objects[i].name=this.value}
-      if(scriptMode==4){objects[i].tId=this.value}
-      }
-    }
-  };
-  textarea.kill = function(){
-    this.remove();
-    textarea = null;
-  };
-  textarea.run = function(){
-    
-    
-  }
-  // Append the textarea to the body
-  document.body.appendChild(textarea);
-  
-}
-
 
 function test(){
   
