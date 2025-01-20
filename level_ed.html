@@ -425,11 +425,19 @@ mapRect = {
             if(r>0){objects[i].rot+=wheelDir*5}
             //
             if(shft+e==2){ // exports currently selected object
-				exportObject(objects[i])
+				shft=0;
+				e=0;
+				key_down[vk_e]=false
 				objects[i].sel=false
+				exportObject(objects[i])
+				
+				
 			}	
 			if(shft+ikey==2){ // imports object into currently selected object
 				objects[i].sel=false
+				shft=0;
+				ikey=0;
+				key_down[vk_i]=false
 				hostOb = i
 				loadOb();
 				
