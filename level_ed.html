@@ -1430,6 +1430,7 @@ function formatCode(inputCode) {
     return lines.join('\n')
   }
   function resizePanels(xVal){
+	  if(xVal>canvas.width/2+4){xVal=canvas.width/2+4}
 	  tilesRect.x = xVal
 	  tilesRect.w = canvas.width-xVal
     document.getElementById("editor").style.left=(tilesRect.x+4)+'px';
@@ -1438,6 +1439,7 @@ function formatCode(inputCode) {
     document.getElementById("editor").style.height=(tilesRect.h-8)+'px';
     document.getElementsByClassName("CodeMirror")[0].style.fontSize =   project.codeSize+"px";
     editor.refresh();  
+ 
   }
 </script>
 <script type='text/javascript' src='engine.js'></script>
