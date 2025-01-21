@@ -496,6 +496,7 @@ mapRect = {
                   tId:objects[i].tId,
                   x:objects[i].x,
                   y:objects[i].y,
+                  depth:objects[i].depth,
                   mapX:objects[i].mapX,
                   mapY:objects[i].mapY,
                   w:1,
@@ -604,6 +605,7 @@ mapRect = {
 					let temp = {
 					  name:makeName(),
 					  tId:selected.tId,
+					  depth:0,
 					  x:mx,
 					  y:my,
 					  mapX:mapCellX+0.5,
@@ -626,6 +628,7 @@ mapRect = {
                   tId:duplicate.tId,
                   x:mx,
                   y:my,
+                  depth:duplicate.depth,
                   mapX:mapCellX+0.5,
                   mapY:mapCellY+0.5,
                   w:1,
