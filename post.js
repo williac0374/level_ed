@@ -3,8 +3,9 @@ canvas.width=0;
 canvas.height=0;
 tileset = ''
 tiles = [];
-tiles2 = [];;
+tiles2 = [];
 objects = [];
+tiles3 = [];
 mapW = 0;
 mapH = 0;
 gridSize = 0;
@@ -13,6 +14,7 @@ function load_map(m){
   tileset = draw_set_image(m.tileSet)
   tiles = m.tiles;
   tiles2 = m.tiles2;
+  tiles3 =m.tiles3;
   objects = m.objects
   gameCode = m.gameCode
   mapW = m.mapW
@@ -109,6 +111,24 @@ function draw_map() {
 	   objects.splice(i,1);
 	}
 
+  }
+    // Draw tiles within the viewport
+  for (let y = startTileY; y < endTileY; y++) {
+    for (let x = startTileX; x < endTileX; x++) {
+      if (tiles3[y] && tiles3[y][x] > 0) {
+        let tId = tiles3[y][x];
+        let sx = tId % columns * gridSize;
+        let sy = Math.floor(tId / columns) * gridSize;
+        draw_image(
+        tileset,
+        x * gridSize - viewport.x, // Adjust by viewport
+        y * gridSize - viewport.y, // Adjust by viewport
+        gridSize,
+        gridSize,
+        0, 0, 0, sx, sy, gridSize, gridSize
+        );
+      }
+    }
   }
 }
 
