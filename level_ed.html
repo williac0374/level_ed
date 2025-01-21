@@ -252,53 +252,54 @@ menuRect = {
       }
       draw_set_color(128,0,128);
       draw_set_linewidth(8);
+      
       if(scriptMode==5){
-        buttons[12].hilite=false;
         buttons[13].hilite=false;
         buttons[14].hilite=false;
         buttons[15].hilite=false;
         buttons[16].hilite=false;
-        buttons[20].hilite=true;
+        buttons[17].hilite=false;
+        buttons[21].hilite=true;
       }
       if(scriptMode==4){
-        buttons[12].hilite=false;
-        buttons[13].hilite=true;
-        buttons[14].hilite=false;
-        buttons[15].hilite=false;
-        buttons[16].hilite=false;
-        buttons[20].hilite=false;
-      }
-      if(scriptMode==3){
-        buttons[12].hilite=true;
-        buttons[13].hilite=false;
-        buttons[14].hilite=false;
-        buttons[15].hilite=false;
-        buttons[16].hilite=false;
-        buttons[20].hilite=false;
-      }
-      if(scriptMode==0){
-        buttons[12].hilite=false;
         buttons[13].hilite=false;
         buttons[14].hilite=true;
         buttons[15].hilite=false;
         buttons[16].hilite=false;
-        buttons[20].hilite=false;
+        buttons[17].hilite=false;
+        buttons[21].hilite=false;
       }
-      if(scriptMode==1){
-        buttons[12].hilite=false;
+      if(scriptMode==3){
+        buttons[13].hilite=true;
+        buttons[14].hilite=false;
+        buttons[15].hilite=false;
+        buttons[16].hilite=false;
+        buttons[17].hilite=false;
+        buttons[21].hilite=false;
+      }
+      if(scriptMode==0){
         buttons[13].hilite=false;
         buttons[14].hilite=false;
         buttons[15].hilite=true;
         buttons[16].hilite=false;
-        buttons[20].hilite=false;
+        buttons[17].hilite=false;
+        buttons[21].hilite=false;
       }
-      if(scriptMode==2){
-        buttons[12].hilite=false;
+      if(scriptMode==1){
         buttons[13].hilite=false;
         buttons[14].hilite=false;
         buttons[15].hilite=false;
         buttons[16].hilite=true;
-        buttons[20].hilite=false;
+        buttons[17].hilite=false;
+        buttons[21].hilite=false;
+      }
+      if(scriptMode==2){
+        buttons[13].hilite=false;
+        buttons[14].hilite=false;
+        buttons[15].hilite=false;
+        buttons[16].hilite=false;
+        buttons[17].hilite=true;
+        buttons[21].hilite=false;
       }
     }
   }
