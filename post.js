@@ -43,7 +43,7 @@ function draw_map() {
   // Draw tiles within the viewport
   for (let y = startTileY; y < endTileY; y++) {
     for (let x = startTileX; x < endTileX; x++) {
-      if (tiles[y] && tiles[y][x] != -1) {
+      if (tiles[y] && tiles[y][x] > 0) {
         let tId = tiles[y][x];
         let sx = tId % columns * gridSize;
         let sy = Math.floor(tId / columns) * gridSize;
@@ -56,7 +56,7 @@ function draw_map() {
         0, 0, 0, sx, sy, gridSize, gridSize
         );
       }
-      if (tiles2[y] && tiles2[y][x] != -1) {
+      if (tiles2[y] && tiles2[y][x] > 0 ) {
         let tId = tiles2[y][x];
         let sx = tId % columns * gridSize;
         let sy = Math.floor(tId / columns) * gridSize;
