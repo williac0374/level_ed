@@ -167,6 +167,7 @@ function reset(){
 	tiles = [];
 	tiles2 = [];
 	objects = [];
+	tiles3 = [];
 	snapped=true;
 	obID=0;
 	after_start=false
@@ -198,13 +199,13 @@ menuRect = {
     this.w = canvas.width;
     this.h = 50;
     if(this.mode==0){
-      for(let i = 0; i < 12; i++){
+      for(let i = 0; i < 13; i++){
         buttons[i].loop();
         buttons[i].draw();
       }
     }
     if(this.mode==1){
-      for(let i = 12; i < 21; i++){
+      for(let i = 13; i < 22; i++){
         buttons[i].loop();
         buttons[i].draw();
         draw_set_color(255,255,255)
@@ -220,16 +221,25 @@ menuRect = {
         buttons[6].hilite=true;
         buttons[7].hilite=false;
         buttons[8].hilite=false;
+        buttons[9].hilite=false;
       }
       if(mode==1){
         buttons[6].hilite=false;
         buttons[7].hilite=true;
         buttons[8].hilite=false;
+        buttons[9].hilite=false;
       }
       if(mode==2){
         buttons[6].hilite=false;
         buttons[7].hilite=false;
         buttons[8].hilite=true;
+        buttons[9].hilite=false;
+      }
+      if(mode==3){
+        buttons[6].hilite=false;
+        buttons[7].hilite=false;
+        buttons[8].hilite=false;
+        buttons[9].hilite=true;
       }
     }
     if(menuRect.mode==1){
@@ -349,6 +359,16 @@ mapRect = {
         }
         
       }
+            for (let y = 0; y < tiles3.length; y++) {
+        for (let x = 0; x < tiles3[y].length; x++) {
+          if(tiles3[y][x]!=-1){
+            let tId = tiles3[y][x];
+            let sx = tId%tilesRect.columns*tilesRect.gridSize;
+            let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
+            draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+          }
+        }
+      }
     }
     
     // viewport border
@@ -371,6 +391,7 @@ mapRect = {
     project.objects = objects;
     tiles = [];
     tiles2 = [];
+    tiles3 = [];
     for (let i = 0; i < this.mapH; i++) {
       var row = [];
       for (let j = 0; j < this.mapW; j++) {
@@ -387,6 +408,14 @@ mapRect = {
       tiles2.push(row);
     }
     project.tiles2=tiles2;
+        for (let i = 0; i < this.mapH; i++) {
+      var row = [];
+      for (let j = 0; j < this.mapW; j++) {
+        row.push(-1);
+      }
+      tiles3.push(row);
+    }
+    project.tiles3=tiles3;
     project.mapW = this.mapW;
     project.mapH = this.mapH;
   },
@@ -565,6 +594,10 @@ mapRect = {
                 tiles2[mapCellY][mapCellX]=selected.tId;
                 project.tiles2[mapCellY][mapCellX]=selected.tId;
               }
+              if(mode==3){
+                tiles3[mapCellY][mapCellX]=selected.tId;
+                project.tiles3[mapCellY][mapCellX]=selected.tId;
+              }
               if(mode==2){
 				  if(duplicating==false){
 					let temp = {
@@ -664,6 +697,10 @@ mapRect = {
                 if(mode==1){
                   tiles2[mapCellY][mapCellX]=selected.tId;
                   project.tiles2[mapCellY][mapCellX]=selected.tId;
+                }
+                if(mode==3){
+                  tiles3[mapCellY][mapCellX]=selected.tId;
+                  project.tiles3[mapCellY][mapCellX]=selected.tId;
                 }
                 
               }
@@ -889,6 +926,8 @@ makeButton(4+bX,4,'Tiles2','mode=1;mouse_down=false');
 bX+=80;
 makeButton(4+bX,4,'Objects','mode=2;mouse_down=false');
 bX+=80;
+makeButton(4+bX,4,'Tiles3','mode=3;mouse_down=false');
+bX+=80;
 makeButton(4+bX,4,'Snap2Grid','if(snapped==true){snapped=false;buttons[9].label="FreeMove"}else{snapped=true;buttons[9].label="Snap2Grid"};mouse_down=false');
 bX+=80;
 makeButton(4+bX,4,'exportGAME','exportGAME();mouse_down=false');
@@ -903,6 +942,7 @@ function start(){
       tilesRect.sprite = draw_set_image(project.tileSet)
       tiles = project.tiles;
       tiles2 = project.tiles2;
+      tiles3 = project.tiles3
       objects = project.objects;
       mapRect.mapW =  project.mapW;
       mapRect.mapH = project.mapH;
@@ -950,11 +990,11 @@ function show_color(){
 
 function loop(){ //;vk_all_keys=[]
 	if(keyboard_check(vk_ctrl)&&keyboard_check(vk_shift)){
-		buttons[11].label='reset'
-		buttons[11].hilite=true
+		buttons[12].label='reset'
+		buttons[12].hilite=true
 	}else{
-		buttons[11].label='TEST'
-		buttons[11].hilite=false
+		buttons[12].label='TEST'
+		buttons[12].hilite=false
 	}
 	if(keyboard_check_pressed(120)){key_down[120]=false;key_pressed[120]=false;test()} //f9
   if(mouse_check_pressed() && keyboard_check(vk_c)){
