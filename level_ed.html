@@ -649,16 +649,10 @@ mapRect = {
                   }
                 }
                 if(noneSelected==true){
+					if(mouse_x<parseFloat(document.getElementById("editor").style.left)){
                   document.getElementById("editor").style.display='none'
-                  // WHEN THE MOUSE IS CLICKED ON MOUSE NOT ON OBECT
-                  //CHECKS IF CODEIDE IS CREATED IF  SO  KILLS IT
-                  /*
-                  if(document.getElementById('codeIDE')!=null){
-                    document.getElementById('codeIDE').kill();
-                  }
-                  */
                   menuRect.mode=0;
-                  
+			  }
                 }else{
                   menuRect.mode=1;
                 }
