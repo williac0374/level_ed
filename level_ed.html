@@ -56,6 +56,7 @@ canvas {
 <canvas id="canvas"></canvas>
 <div id='editor'></div>
 <script>
+	panelMiddle=0
 	duplicate={}
 	duplicating=false
 	//localStorage.removeItem("level_ed");window.close()
@@ -120,7 +121,7 @@ function resizeCanvas() {
   document.getElementById("editor").style.height=(tilesRect.h-8)+'px';
   document.getElementsByClassName("CodeMirror")[0].style.fontSize =   project.codeSize+"px";
   editor.refresh();
-  
+  panelMiddle = canvas.width/2
 }
 
 // Call resizeCanvas immediately on load and bind to resize event
@@ -495,7 +496,9 @@ mapRect = {
         }
       }else{
         if(document.getElementById("customTextBox")==null){
+         if(mouse_x<parseFloat(document.getElementById("editor").style.left)){
           this.mapG += wheelDir*1.5;
+		 }
         }
       }
       wheelDir=0;
@@ -708,9 +711,9 @@ tilesRect = {
   loop:function(){
 
     if(menuRect.mode==0){
-      this.x = canvas.width/2;
+      this.x = panelMiddle;
       this.y = menuRect.h;
-      this.w = canvas.width/2;
+      this.w = canvas.width-panelMiddle;
       this.h = canvas.height-menuRect.h;
       if(this.sprite!=null){
         if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
@@ -991,8 +994,12 @@ function loop(){ //;vk_all_keys=[]
 	  document.title = title
   }
   
+ if(keyboard_check(115)){
+	 resizePanels(mouse_x)
+	 
+	 //key_down[115] = false
+ }
 }
-
 
 function draw(){
   
@@ -1421,6 +1428,16 @@ function formatCode(inputCode) {
       lines[i] = pre+lines[i];
     }
     return lines.join('\n')
+  }
+  function resizePanels(xVal){
+	  tilesRect.x = xVal
+	  tilesRect.w = canvas.width-xVal
+    document.getElementById("editor").style.left=(tilesRect.x+4)+'px';
+    document.getElementById("editor").style.top=(tilesRect.y+4)+'px';
+    document.getElementById("editor").style.width=(tilesRect.w-8)+'px';
+    document.getElementById("editor").style.height=(tilesRect.h-8)+'px';
+    document.getElementsByClassName("CodeMirror")[0].style.fontSize =   project.codeSize+"px";
+    editor.refresh();  
   }
 </script>
 <script type='text/javascript' src='engine.js'></script>
