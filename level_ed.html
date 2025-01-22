@@ -304,6 +304,12 @@ menuRect = {
     }
   }
 }
+t1HL=true;
+t2HL=true;
+oHL=true;
+t3HL=true;
+hl = 0
+setInterval(function(){if(hl>1000){hl=0}hl++},100)
 mapRect = {
   x:0,
   y:menuRect.h,
@@ -326,6 +332,15 @@ mapRect = {
             let sx = tId%tilesRect.columns*tilesRect.gridSize;
             let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
             draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+             if(t1HL==true){
+				draw_set_color(255,255,255)
+				draw_set_linewidth(6)
+				ctx.lineDashOffset = -hl;
+				draw_set_linedash([6,4])
+				draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
+				draw_set_linedash([]) 
+				ctx.lineDashOffset = 0
+			 }
           }
         }
       }
@@ -336,6 +351,15 @@ mapRect = {
             let sx = tId%tilesRect.columns*tilesRect.gridSize;
             let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
             draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+             if(t2HL==true){
+				draw_set_color(255,255,255)
+				draw_set_linewidth(6)
+				ctx.lineDashOffset = -hl;
+				draw_set_linedash([6,4])
+				draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
+				draw_set_linedash([]) 
+				ctx.lineDashOffset = 0
+			 }          
           }
         }
       }
@@ -357,6 +381,15 @@ mapRect = {
             draw_set_linewidth(2)
             draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,true,objects[i].rot,ox,oy)
           }
+		 if(oHL==true){
+			draw_set_color(255,255,255)
+			draw_set_linewidth(6)
+			ctx.lineDashOffset = -hl;
+			draw_set_linedash([6,4])
+	    	draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,true,objects[i].rot,ox,oy)
+         	draw_set_linedash([]) 
+			ctx.lineDashOffset = 0
+		 }          
         }
         
       }
@@ -367,6 +400,15 @@ mapRect = {
             let sx = tId%tilesRect.columns*tilesRect.gridSize;
             let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
             draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
+             if(t3HL==true){
+				draw_set_color(255,255,255)
+				draw_set_linewidth(6)
+				ctx.lineDashOffset = -hl;
+				draw_set_linedash([6,4])
+				draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
+				draw_set_linedash([]) 
+				ctx.lineDashOffset = 0
+			 }          
           }
         }
       }
@@ -385,7 +427,9 @@ mapRect = {
     draw_set_linewidth(8)
     draw_set_linedash([])
     draw_rectangle( this.x, this.y, this.w, this.h,true)
-    drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
+    if(t1HL==false&&t2HL==false&&oHL==false&&t3HL==false){
+        drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
+    }
   },
   init:function(){
     objects = [];
@@ -889,7 +933,7 @@ function makeButton(x,y,label,funct){
         draw_set_linedash([])
         draw_set_linewidth(6)
         draw_rectangle(this.x, this.y, this.w, this.h,true)
-      }
+        }
     },
     loop:function(){
       this.x = menuRect.x+x;
@@ -900,11 +944,19 @@ function makeButton(x,y,label,funct){
       // hover and click
       if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){// hover
         this.bckCol=[222,222,222];
+        if(this.label=='Tiles1'){t1HL=true}
+        if(this.label=='Tiles2'){t2HL=true}
+        if(this.label=='Objects'){oHL=true}
+        if(this.label=='Tiles3'){t3HL=true}
         if(mouse_check_pressed()){
           eval(funct)
         }
       }else{
         this.bckCol=[188,188,188];
+        if(this.label=='Tiles1'){t1HL=false} 
+        if(this.label=='Tiles2'){t2HL=false}
+        if(this.label=='Objects'){oHL=false}
+        if(this.label=='Tiles3'){t3HL=false}
       }
     }
   }
