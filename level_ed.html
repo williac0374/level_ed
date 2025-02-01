@@ -512,11 +512,11 @@ mapRect = {
         if(v==0){
           for(let i = objects.length-1; i>=0; i--){
             if(objects[i].sel==true && document.getElementById("customTextBox")==null){
-            if(w>0){objects[i].w+=wheelDir*0.1}
-            if(h>0){objects[i].h+=wheelDir*0.1}
-            if(r>0){objects[i].rot+=wheelDir*5}
+            if(w>0){objects[i].w+=wheelDir*0.1}  //adjust selected objects width with mouse wheel
+            if(h>0){objects[i].h+=wheelDir*0.1}  // adjust selected objects height with mouse wheel
+            if(r>0){objects[i].rot+=wheelDir*5}  //adjust selected objects rotation with mouse wheel
               //
-              if(shft+e==2){ // exports currently selected object
+              if(shft+e==2){ // exports currently selected object to json file
                 shft=0;
                 e=0;
                 key_down[vk_e]=false
@@ -525,7 +525,7 @@ mapRect = {
                 
                 
               }
-              if(shft+ikey==2){ // imports object into currently selected object
+              if(shft+ikey==2){ // imports object into currently selected object from json file
                 objects[i].sel=false
                 shft=0;
                 ikey=0;
@@ -534,7 +534,7 @@ mapRect = {
                 loadOb();
                 
               }
-              if(shft+d==2){ // copies currently selected object
+              if(shft+d==2){ // copies currently selected object to be placed with cursor
                 duplicate = {
                   name:'no_name',
                   tId:objects[i].tId,
@@ -1024,7 +1024,7 @@ makeButton(4+bX,4,'Objects','mode=2;mouse_down=false');
 bX+=80;
 makeButton(4+bX,4,'Tiles3','mode=3;mouse_down=false');
 bX+=80;
-makeButton(4+bX,4,'Snap2Grid','if(snapped==true){snapped=false;buttons[9].label="FreeMove"}else{snapped=true;buttons[9].label="Snap2Grid"};mouse_down=false');
+makeButton(4+bX,4,'Snap2Grid','if(snapped==true){snapped=false;buttons[10].label="FreeMove"}else{snapped=true;buttons[10].label="Snap2Grid"};mouse_down=false');
 bX+=80;
 makeButton(4+bX,4,'exportGAME','exportGAME();mouse_down=false');
 bX+=80;
