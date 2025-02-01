@@ -16,7 +16,7 @@ Level_Ed is a JavaScript-based game editor that allows users to create levels by
 1. Clone or download this repository.
 2. Open `level_ed.html` in a browser.
 ### Online Usage
-Simply open `level_ed.html` in any modern web browser (Chrome, Firefox, Edge).
+Simply open `https://williac0374.github.io/level_ed/level_ed.html` in any modern web browser (Chrome, Firefox, Edge).
 
 ## Usage Guide
 ### **Adding Tiles & Objects**
