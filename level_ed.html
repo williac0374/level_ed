@@ -1402,6 +1402,15 @@ function test(){
     var myWindow = window.open();
     myWindow.document.write(content);
     myWindow.document.title = title;
+        myWindow.onerror = function(message, source, lineno, colno, error) {
+      // Display the error in an alert
+      if(confirm(
+      "Error: " + message + "\n" +
+      "Source: " + source + "\n" +
+      "Line: " + lineno + ", Column: " + colno + "\n" +
+      "Error object: " + error
+      )){myWindow.close()};
+    };
   }
 }
 function helpBoxBAK() {
