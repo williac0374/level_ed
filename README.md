@@ -1,4 +1,4 @@
-# Level Editor - Drag and Drop Game Maker
+# Level_Ed - Drag and Drop Game Maker
 
 ## Overview
 Level_Ed is a JavaScript-based game editor that allows users to create levels by dragging and dropping tiles and objects. It features an integrated CodeMirror-based IDE for scripting object behaviors.
