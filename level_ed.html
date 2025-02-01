@@ -1401,8 +1401,7 @@ function test(){
     content += post_game
     var myWindow = window.open();
     myWindow.document.write(content);
-    myWindow.document.title = title;
-        myWindow.onerror = function(message, source, lineno, colno, error) {
+          myWindow.onerror = function(message, source, lineno, colno, error) {
       // Display the error in an alert
       if(confirm(
       "Error: " + message + "\n" +
@@ -1411,6 +1410,7 @@ function test(){
       "Error object: " + error
       )){myWindow.close()};
     };
+      myWindow.document.title = title;
   }
 }
 function helpBoxBAK() {
