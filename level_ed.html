@@ -56,10 +56,10 @@ canvas {
 <canvas id="canvas"></canvas>
 <div id='editor'></div>
 <script>
-	panelMiddle=0
-	duplicate={}
-	duplicating=false
-	//localStorage.removeItem("level_ed");window.close()
+panelMiddle=0
+duplicate={}
+duplicating=false
+//localStorage.removeItem("level_ed");window.close()
 // Initialize CodeMirror
 var editor = CodeMirror(document.getElementById("editor"), {
   mode: "javascript",
@@ -81,7 +81,7 @@ editor.on("change",function(cm,change){
     if(scriptMode==3){objects[i].name=editor.getValue()}
     if(scriptMode==4){objects[i].tId=parseInt(editor.getValue())}
     if(scriptMode==5){project.gameCode=editor.getValue()}
-    //project.gameCode
+      //project.gameCode
     }
   }
 });
@@ -89,7 +89,7 @@ selectedRange = null;
 selection = null
 coding=false
 editor.on('blur', () => {
-	  for(let i = objects.length-1; i>=0; i--){
+  for(let i = objects.length-1; i>=0; i--){
     if(objects[i].sel==true){
     if(scriptMode==0){objects[i].startCode=editor.getValue()}
     if(scriptMode==1){objects[i].loopCode=editor.getValue()}
@@ -99,7 +99,7 @@ editor.on('blur', () => {
     if(scriptMode==5){project.gameCode=editor.getValue()}
     }
   }
-	coding=false;
+  coding=false;
   selection = editor.getSelection();
   if (selection) {
     selectedRange = editor.listSelections()[0];
@@ -107,7 +107,7 @@ editor.on('blur', () => {
 });
 
 editor.on('focus', () => {
-	coding=true;
+  coding=true;
 });
 
 function resizeCanvas() {
@@ -115,7 +115,7 @@ function resizeCanvas() {
   var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
   canvas.width=WIDTH;
   canvas.height=HEIGHT;
-    document.getElementById("editor").style.left=(tilesRect.x+4)+'px';
+  document.getElementById("editor").style.left=(tilesRect.x+4)+'px';
   document.getElementById("editor").style.top=(tilesRect.y+4)+'px';
   document.getElementById("editor").style.width=(tilesRect.w-8)+'px';
   document.getElementById("editor").style.height=(tilesRect.h-8)+'px';
@@ -162,26 +162,26 @@ setTimeout(function(){
 //buttons
 window.addEventListener('resize', resizeCanvas);
 function reset(){
-	project = {title:'none',tileSet:null,objects:[],gameCode:"function hello(){'hello world!!!'}",codeSize:12,tColumns:10,view:{x:0,y:0,w:120,h:120}};
-	mode = 2;
-	tiles = [];
-	tiles2 = [];
-	objects = [];
-	tiles3 = [];
-	snapped=true;
-	obID=0;
-	after_start=false
-	object_code=''
-	buttons = [];
-	b_width = 5;
-	duplicate = {}
-	duplicating=false
-	cur_value = null;
-	codeCursor=null
-	line = ''
-	scriptMode = 3;
-	title='none'
-	document.title = title
+project = {title:'none',tileSet:null,objects:[],gameCode:"function hello(){'hello world!!!'}",codeSize:12,tColumns:10,view:{x:0,y:0,w:120,h:120}};
+  mode = 2;
+  tiles = [];
+  tiles2 = [];
+  objects = [];
+  tiles3 = [];
+  snapped=true;
+  obID=0;
+  after_start=false
+  object_code=''
+  buttons = [];
+  b_width = 5;
+duplicate = {}
+  duplicating=false
+  cur_value = null;
+  codeCursor=null
+  line = ''
+  scriptMode = 3;
+  title='none'
+  document.title = title
 }
 reset();
 menuRect = {
@@ -243,12 +243,12 @@ menuRect = {
       }
     }
     if(menuRect.mode==1){
-        if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
+      if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
         project.codeSize += wheelDir
       if(project.codeSize<12){project.codeSize=12}
         document.getElementsByClassName("CodeMirror")[0].style.fontSize =   project.codeSize+"px";
         wheelDir=0;
-          editor.refresh();
+        editor.refresh();
       }
       draw_set_color(128,0,128);
       draw_set_linewidth(8);
@@ -332,15 +332,15 @@ mapRect = {
             let sx = tId%tilesRect.columns*tilesRect.gridSize;
             let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
             draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
-             if(t1HL==true){
-				draw_set_color(255,255,255)
-				draw_set_linewidth(6)
-				ctx.lineDashOffset = -hl;
-				draw_set_linedash([6,4])
-				draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
-				draw_set_linedash([]) 
-				ctx.lineDashOffset = 0
-			 }
+            if(t1HL==true){
+              draw_set_color(255,255,255)
+              draw_set_linewidth(6)
+              ctx.lineDashOffset = -hl;
+              draw_set_linedash([6,4])
+              draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
+              draw_set_linedash([])
+              ctx.lineDashOffset = 0
+            }
           }
         }
       }
@@ -351,15 +351,15 @@ mapRect = {
             let sx = tId%tilesRect.columns*tilesRect.gridSize;
             let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
             draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
-             if(t2HL==true){
-				draw_set_color(255,255,255)
-				draw_set_linewidth(6)
-				ctx.lineDashOffset = -hl;
-				draw_set_linedash([6,4])
-				draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
-				draw_set_linedash([]) 
-				ctx.lineDashOffset = 0
-			 }          
+            if(t2HL==true){
+              draw_set_color(255,255,255)
+              draw_set_linewidth(6)
+              ctx.lineDashOffset = -hl;
+              draw_set_linedash([6,4])
+              draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
+              draw_set_linedash([])
+              ctx.lineDashOffset = 0
+            }
           }
         }
       }
@@ -381,34 +381,34 @@ mapRect = {
             draw_set_linewidth(2)
             draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,true,objects[i].rot,ox,oy)
           }
-		 if(oHL==true){
-			draw_set_color(255,255,255)
-			draw_set_linewidth(6)
-			ctx.lineDashOffset = -hl;
-			draw_set_linedash([6,4])
-	    	draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,true,objects[i].rot,ox,oy)
-         	draw_set_linedash([]) 
-			ctx.lineDashOffset = 0
-		 }          
+          if(oHL==true){
+            draw_set_color(255,255,255)
+            draw_set_linewidth(6)
+            ctx.lineDashOffset = -hl;
+            draw_set_linedash([6,4])
+            draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,true,objects[i].rot,ox,oy)
+            draw_set_linedash([])
+            ctx.lineDashOffset = 0
+          }
         }
         
       }
-            for (let y = 0; y < tiles3.length; y++) {
+      for (let y = 0; y < tiles3.length; y++) {
         for (let x = 0; x < tiles3[y].length; x++) {
           if(tiles3[y][x]!=-1){
             let tId = tiles3[y][x];
             let sx = tId%tilesRect.columns*tilesRect.gridSize;
             let sy = floor(tId/tilesRect.columns)*tilesRect.gridSize;
             draw_image(tilesRect.sprite,this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,0,0,0,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
-             if(t3HL==true){
-				draw_set_color(255,255,255)
-				draw_set_linewidth(6)
-				ctx.lineDashOffset = -hl;
-				draw_set_linedash([6,4])
-				draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
-				draw_set_linedash([]) 
-				ctx.lineDashOffset = 0
-			 }          
+            if(t3HL==true){
+              draw_set_color(255,255,255)
+              draw_set_linewidth(6)
+              ctx.lineDashOffset = -hl;
+              draw_set_linedash([6,4])
+              draw_rectangle(this.mapX+4+(x*this.mapG),this.mapY+4+(y*this.mapG),this.mapG,this.mapG,true,0,0,0)
+              draw_set_linedash([])
+              ctx.lineDashOffset = 0
+            }
           }
         }
       }
@@ -428,7 +428,7 @@ mapRect = {
     draw_set_linedash([])
     draw_rectangle( this.x, this.y, this.w, this.h,true)
     if(t1HL==false&&t2HL==false&&oHL==false&&t3HL==false){
-        drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
+      drawG(this.mapX+4,this.mapY+4,this.mapG,this.mapG,this.mapW*this.mapG,this.mapH*this.mapG)
     }
   },
   init:function(){
@@ -453,7 +453,7 @@ mapRect = {
       tiles2.push(row);
     }
     project.tiles2=tiles2;
-        for (let i = 0; i < this.mapH; i++) {
+    for (let i = 0; i < this.mapH; i++) {
       var row = [];
       for (let j = 0; j < this.mapW; j++) {
         row.push(-1);
@@ -491,23 +491,23 @@ mapRect = {
     if(keyboard_check(vk_e)){e=1};
     if(keyboard_check(vk_p)){p=1};
     if(keyboard_check(vk_i)){ikey=1};
-    if(keyboard_check_pressed(vk_space)){
-		this.offX = mouse_x - this.mapX
-		this.offY = mouse_y - this.mapY
-	}
-	if(keyboard_check(vk_space)){
-		this.mapX = mouse_x - this.offX
-		this.mapY = mouse_y - this.offY
-		if(keyboard_check_pressed(vk_backspace)){
-		this.mapX = 0;
-		this.mapY = 0;
-		this.offX = mouse_x - this.mapX
-		this.offY = mouse_y - this.mapY
-		}
-	}
-
-	
-       
+      if(keyboard_check_pressed(vk_space)){
+        this.offX = mouse_x - this.mapX
+        this.offY = mouse_y - this.mapY
+      }
+      if(keyboard_check(vk_space)){
+        this.mapX = mouse_x - this.offX
+        this.mapY = mouse_y - this.offY
+        if(keyboard_check_pressed(vk_backspace)){
+          this.mapX = 0;
+          this.mapY = 0;
+          this.offX = mouse_x - this.mapX
+          this.offY = mouse_y - this.mapY
+        }
+      }
+      
+      
+      
       if(w+h+r+v+shft+d+p+e+ikey>0){
         if(v==0){
           for(let i = objects.length-1; i>=0; i--){
@@ -515,26 +515,26 @@ mapRect = {
             if(w>0){objects[i].w+=wheelDir*0.1}
             if(h>0){objects[i].h+=wheelDir*0.1}
             if(r>0){objects[i].rot+=wheelDir*5}
-            //
-            if(shft+e==2){ // exports currently selected object
-				shft=0;
-				e=0;
-				key_down[vk_e]=false
-				objects[i].sel=false
-				exportObject(objects[i])
-				
-				
-			}	
-			if(shft+ikey==2){ // imports object into currently selected object
-				objects[i].sel=false
-				shft=0;
-				ikey=0;
-				key_down[vk_i]=false
-				hostOb = i
-				loadOb();
-				
-			}
-            if(shft+d==2){ // copies currently selected object
+              //
+              if(shft+e==2){ // exports currently selected object
+                shft=0;
+                e=0;
+                key_down[vk_e]=false
+                objects[i].sel=false
+                exportObject(objects[i])
+                
+                
+              }
+              if(shft+ikey==2){ // imports object into currently selected object
+                objects[i].sel=false
+                shft=0;
+                ikey=0;
+                key_down[vk_i]=false
+                hostOb = i
+                loadOb();
+                
+              }
+              if(shft+d==2){ // copies currently selected object
                 duplicate = {
                   name:'no_name',
                   tId:objects[i].tId,
@@ -552,18 +552,18 @@ mapRect = {
                   loopCode:objects[i].loopCode,
                   drawCode:objects[i].drawCode,
                   sel:false
-                }	
-                duplicating=true			
-				selected.tId = duplicate.tId
-				selected.cellX = selected.tId%tilesRect.columns;
-				selected.cellY = floor(selected.tId/tilesRect.columns);
-				cur_value = tilesRect.sprite
-				
-				duplicate.name = makeName();
-				console.log(duplicate)
-				objects[i].sel=false
-			} 
-
+                }
+                duplicating=true
+                selected.tId = duplicate.tId
+                selected.cellX = selected.tId%tilesRect.columns;
+                selected.cellY = floor(selected.tId/tilesRect.columns);
+                cur_value = tilesRect.sprite
+                
+                duplicate.name = makeName();
+                console.log(duplicate)
+                objects[i].sel=false
+              }
+              
             }
           }
           project.objects = objects
@@ -571,9 +571,9 @@ mapRect = {
         }
       }else{
         if(document.getElementById("customTextBox")==null){
-         if(mouse_x<parseFloat(document.getElementById("editor").style.left)){
-          this.mapG += wheelDir*1.5;
-		 }
+          if(mouse_x<parseFloat(document.getElementById("editor").style.left)){
+            this.mapG += wheelDir*1.5;
+          }
         }
       }
       wheelDir=0;
@@ -605,11 +605,49 @@ mapRect = {
         my = (floor((mouse_y-this.mapY)/gs)*gs)+this.mapY+4
       }
       cursor(mx,my,gs,gs,cur_value)
-
+      
       mapCellX = 0;
       mapCellY = 0;
     if((mx-this.mapX-4)>0){mapCellX = (mx-this.mapX-4)/this.mapG}
     if((my-this.mapY-4)>0){mapCellY = (my-this.mapY-4)/this.mapG}
+      if(mouse_right_down){  // checks if right mouse button is being pressed
+        //clears selected tile for assignment
+        selected.tId=-1;
+      duplicate = {};
+        duplicating = false;
+        cur_value=null;
+        if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
+          if(my>this.mapY && my < this.mapY+this.mapH*this.mapG){
+            if(mode==0){
+              tiles[mapCellY][mapCellX]=-1;
+              project.tiles[mapCellY][mapCellX]=-1;
+            }
+            if(mode==1){
+              tiles2[mapCellY][mapCellX]=-1;
+              project.tiles2[mapCellY][mapCellX]=-1;
+            }
+            if(mode==3){
+              tiles3[mapCellY][mapCellX]=-1;
+              project.tiles3[mapCellY][mapCellX]=-1;
+            }
+            if(mode==2){
+              for(let i = objects.length-1; i>=0; i--){
+                let cx = objects[i].mapX;
+                let cy = objects[i].mapY;
+                let obx = this.mapX+4+(cx*this.mapG);
+                let oby = this.mapY+4+(cy*this.mapG);
+                let scaledW = this.mapG*objects[i].w;
+                let scaledH = this.mapG*objects[i].h;
+                let ox = (this.mapG*objects[i].w)/2;
+                let oy = (this.mapG*objects[i].h)/2;
+                if(inside(mouse_x, mouse_y, obx-(scaledW/2),oby-(scaledH/2), scaledW, scaledH,true,objects[i].rot,ox,oy)){
+                  objects.splice(i,1);
+                }
+              }
+            }
+          }
+        }
+      }
       if(mouse_check()){
         if(mx>this.mapX && mx < this.mapX+this.mapW*this.mapG){
           if(my>this.mapY && my < this.mapY+this.mapH*this.mapG){
@@ -631,7 +669,8 @@ mapRect = {
               }
             }
             
-            if(cur_value!=null){
+            if(cur_value!=null){ // has a tile selected for assignment
+              
               if(mode==0){
                 tiles[mapCellY][mapCellX]=selected.tId;
                 project.tiles[mapCellY][mapCellX]=selected.tId;
@@ -645,54 +684,55 @@ mapRect = {
                 project.tiles3[mapCellY][mapCellX]=selected.tId;
               }
               if(mode==2){
-				  if(duplicating==false){
-					let temp = {
-					  name:makeName(),
-					  tId:selected.tId,
-					  depth:0,
-					  x:mx,
-					  y:my,
-					  mapX:mapCellX+0.5,
-					  mapY:mapCellY+0.5,
-					  w:1,
-					  h:1,
-					  rot:0,
-					  ox:0,
-					  oy:0,
-					  startCode:"",
-					  loopCode:"",
-					  drawCode:"",
-					  sel:false
-					}
-					objects.push(temp);
-					project.objects = objects;
+                if(duplicating==false){
+                  let temp = {
+                    name:makeName(),
+                    tId:selected.tId,
+                    depth:0,
+                    x:mx,
+                    y:my,
+                    mapX:mapCellX+0.5,
+                    mapY:mapCellY+0.5,
+                    w:1,
+                    h:1,
+                    rot:0,
+                    ox:0,
+                    oy:0,
+                    startCode:"",
+                    loopCode:"",
+                    drawCode:"",
+                    sel:false
+                  }
+                  objects.push(temp);
+                  project.objects = objects;
                 }else{
-				let temp = {
-                  name:makeName(),
-                  tId:duplicate.tId,
-                  x:mx,
-                  y:my,
-                  depth:duplicate.depth,
-                  mapX:mapCellX+0.5,
-                  mapY:mapCellY+0.5,
-                  w:1,
-                  h:1,
-                  rot:0,
-                  ox:0,
-                  oy:0,
-                  startCode:duplicate.startCode,
-                  loopCode:duplicate.loopCode,
-                  drawCode:duplicate.drawCode,
-                  sel:false
-                }
-                objects.push(temp);
+                  let temp = {
+                    name:makeName(),
+                    tId:duplicate.tId,
+                    x:mx,
+                    y:my,
+                    depth:duplicate.depth,
+                    mapX:mapCellX+0.5,
+                    mapY:mapCellY+0.5,
+                    w:1,
+                    h:1,
+                    rot:0,
+                    ox:0,
+                    oy:0,
+                    startCode:duplicate.startCode,
+                    loopCode:duplicate.loopCode,
+                    drawCode:duplicate.drawCode,
+                    sel:false
+                  }
+                  objects.push(temp);
                 //duplicate={};
-				localStorage.setItem("level_ed", JSON.stringify(project))
-				mouse_down=false
-			}
-			mouse_down=false
+                  localStorage.setItem("level_ed", JSON.stringify(project))
+                  mouse_down=false
+                }
+                mouse_down=false
               }
               localStorage.setItem("level_ed", JSON.stringify(project))
+              
             }else{
               if(mode==2){
                 var noneSelected=true
@@ -730,10 +770,10 @@ mapRect = {
                   }
                 }
                 if(noneSelected==true){
-					if(mouse_x<parseFloat(document.getElementById("editor").style.left)){
-                  document.getElementById("editor").style.display='none'
-                  menuRect.mode=0;
-			  }
+                  if(mouse_x<parseFloat(document.getElementById("editor").style.left)){
+                    document.getElementById("editor").style.display='none'
+                    menuRect.mode=0;
+                  }
                 }else{
                   menuRect.mode=1;
                 }
@@ -769,7 +809,7 @@ tilesRect = {
   tilesY:menuRect.h+4,
   gridSize:32,
   sorX:0,
-  sorY:0,    
+  sorY:0,
   columns:0,
   sprite:null,
   scale:1,
@@ -778,8 +818,8 @@ tilesRect = {
     draw_rect_ol(this.x,this.y,this.w,this.h,4,[88,88,88],[255,255,255])
     if(menuRect.mode==0){
       if(this.sprite!=null){
-		  
-       // draw_image(this.sprite,this.tilesX,this.tilesY,this.sprite.width*this.scale,this.sprite.height*this.scale)
+        
+        // draw_image(this.sprite,this.tilesX,this.tilesY,this.sprite.width*this.scale,this.sprite.height*this.scale)
         draw_image(this.sprite,this.tilesX,this.tilesY,this.sprite.width*this.scale,this.sprite.height*this.scale,0,0,0,this.sorX,this.sorY,this.sprite.width,this.sprite.height)
         drawG(this.tilesX,this.tilesY,this.gridSize*this.scale,this.gridSize*this.scale,this.sprite.width*this.scale,this.sprite.height*this.scale);
         
@@ -788,7 +828,7 @@ tilesRect = {
     
   },
   loop:function(){
-
+    
     if(menuRect.mode==0){
       this.x = panelMiddle;
       this.y = menuRect.h;
@@ -796,29 +836,29 @@ tilesRect = {
       this.h = canvas.height-menuRect.h;
       if(this.sprite!=null){
         if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
-			if(keyboard_check_pressed(vk_space)){
-				this.offX = mouse_x - this.sorX; 
-				this.offY = mouse_y - this.sorY; 
-	        }
-			if(keyboard_check(vk_space)){
-				this.sorX = snap(mouse_x - this.offX,this.gridSize)
-				this.sorY = snap(mouse_y - this.offY,this.gridSize)
-				if(keyboard_check_pressed(vk_backspace)){
-					this.sorX = 0;
-				    this.sorY = 0;
-				    this.offX = mouse_x - this.sorX; 
-				    this.offY = mouse_y - this.sorY; 
-				}
-			}
-		  if(keyboard_check_pressed(vk_up)){this.sorY -= this.gridSize}
-		  if(keyboard_check_pressed(vk_down)){this.sorY += this.gridSize}
-		  if(keyboard_check_pressed(vk_left)){this.sorX -= this.gridSize}
-		  if(keyboard_check_pressed(vk_right)){this.sorX += this.gridSize} 
-		  if(wheelDir<1){
+          if(keyboard_check_pressed(vk_space)){
+            this.offX = mouse_x - this.sorX;
+            this.offY = mouse_y - this.sorY;
+          }
+          if(keyboard_check(vk_space)){
+            this.sorX = snap(mouse_x - this.offX,this.gridSize)
+            this.sorY = snap(mouse_y - this.offY,this.gridSize)
+            if(keyboard_check_pressed(vk_backspace)){
+              this.sorX = 0;
+              this.sorY = 0;
+              this.offX = mouse_x - this.sorX;
+              this.offY = mouse_y - this.sorY;
+            }
+          }
+        if(keyboard_check_pressed(vk_up)){this.sorY -= this.gridSize}
+        if(keyboard_check_pressed(vk_down)){this.sorY += this.gridSize}
+        if(keyboard_check_pressed(vk_left)){this.sorX -= this.gridSize}
+        if(keyboard_check_pressed(vk_right)){this.sorX += this.gridSize}
+          if(wheelDir<1){
           if(this.scale>0.1){this.scale += wheelDir*0.05;}
-	      }else{
-			 this.scale += wheelDir*0.05;
-		  }
+          }else{
+            this.scale += wheelDir*0.05;
+          }
           console.log(this.scale)
           wheelDir=0;
           let gs = this.gridSize*this.scale
@@ -830,19 +870,19 @@ tilesRect = {
           let sx =(this.sprite.width*this.scale)
           cursor(mx,my,gs,gs,null)
           if(selected.tId!=null){
-			let modX = this.sorX/this.gridSize
-			let modY = this.sorY/this.gridSize
+            let modX = this.sorX/this.gridSize
+            let modY = this.sorY/this.gridSize
             selected.x=((selected.cellX-modX)*gs)+this.tilesX;
             selected.y=((selected.cellY-modY)*gs)+this.tilesY;
             selected.w=gs;
             selected.h=gs;
           }
-           ////////////////////////////////////////////////////////
-           // displays tId of tilemap hovered over
-            let tX=round((mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale))))+(this.sorX/this.gridSize)
-            let tY=round((my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale))))+(this.sorY/this.gridSize)
-            document.title = 'tId: '+floor((tY*this.columns)+tX)
-           ////////////////////////////////////////////
+          ////////////////////////////////////////////////////////
+          // displays tId of tilemap hovered over
+          let tX=round((mx - (this.x+4))/((this.sprite.width*this.scale)/((this.sprite.width*this.scale)/(this.gridSize*this.scale))))+(this.sorX/this.gridSize)
+          let tY=round((my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale))))+(this.sorY/this.gridSize)
+          document.title = 'tId: '+floor((tY*this.columns)+tX)
+          ////////////////////////////////////////////
           if(mouse_check_pressed()){
             selected.x=mx;
             selected.y=my;
@@ -855,7 +895,7 @@ tilesRect = {
             cur_value = this.sprite;
           }
         }
-         
+        
         let tId = ((selected.cellY*this.columns)+selected.cellX)
       }else{
         draw_set_color(0,0,0);
@@ -867,7 +907,7 @@ tilesRect = {
     }else{ // changes code editor text size?
       if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){
         if(document.getElementById("customTextBox")==null){
-
+          
           //document.getElementById('codeIDE').style.fontSize = project.codeSize+'px';
         }
         wheelDir=0;
@@ -933,7 +973,7 @@ function makeButton(x,y,label,funct){
         draw_set_linedash([])
         draw_set_linewidth(6)
         draw_rectangle(this.x, this.y, this.w, this.h,true)
-        }
+      }
     },
     loop:function(){
       this.x = menuRect.x+x;
@@ -944,19 +984,19 @@ function makeButton(x,y,label,funct){
       // hover and click
       if(inside(mouse_x, mouse_y, this.x, this.y, this.w, this.h, 0, 0, 0)){// hover
         this.bckCol=[222,222,222];
-        if(this.label=='Tiles1'){t1HL=true}
-        if(this.label=='Tiles2'){t2HL=true}
-        if(this.label=='Objects'){oHL=true}
-        if(this.label=='Tiles3'){t3HL=true}
+      if(this.label=='Tiles1'){t1HL=true}
+      if(this.label=='Tiles2'){t2HL=true}
+      if(this.label=='Objects'){oHL=true}
+      if(this.label=='Tiles3'){t3HL=true}
         if(mouse_check_pressed()){
           eval(funct)
         }
       }else{
         this.bckCol=[188,188,188];
-        if(this.label=='Tiles1'){t1HL=false} 
-        if(this.label=='Tiles2'){t2HL=false}
-        if(this.label=='Objects'){oHL=false}
-        if(this.label=='Tiles3'){t3HL=false}
+      if(this.label=='Tiles1'){t1HL=false}
+      if(this.label=='Tiles2'){t2HL=false}
+      if(this.label=='Objects'){oHL=false}
+      if(this.label=='Tiles3'){t3HL=false}
       }
     }
   }
@@ -965,7 +1005,7 @@ function makeButton(x,y,label,funct){
 
 let bX = 0
 makeButton(4+bX,4,'load tSet','loadTiles();mouse_down=false');
-bX+=80;      
+bX+=80;
 makeButton(4+bX,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));tilesRect.columns = tilesRect.sprite.width/tilesRect.gridSize;project.tColumns = tilesRect.columns;project.gridSize=tilesRect.gridSize;localStorage.setItem("level_ed", JSON.stringify(project));mouse_down=false');
 bX+=80;
 makeButton(4+bX,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mapRect.init();mouse_down=false');
@@ -1045,14 +1085,14 @@ function show_color(){
 }
 
 function loop(){ //;vk_all_keys=[]
-	if(keyboard_check(vk_ctrl)&&keyboard_check(vk_shift)){
-		buttons[12].label='reset'
-		buttons[12].hilite=true
-	}else{
-		buttons[12].label='TEST'
-		buttons[12].hilite=false
-	}
-	if(keyboard_check_pressed(120)){key_down[120]=false;key_pressed[120]=false;test()} //f9
+  if(keyboard_check(vk_ctrl)&&keyboard_check(vk_shift)){
+    buttons[12].label='reset'
+    buttons[12].hilite=true
+  }else{
+    buttons[12].label='TEST'
+    buttons[12].hilite=false
+  }
+if(keyboard_check_pressed(120)){key_down[120]=false;key_pressed[120]=false;test()} //f9
   if(mouse_check_pressed() && keyboard_check(vk_c)){
     if(colorShow==false){
       colorShow=true
@@ -1066,14 +1106,14 @@ function loop(){ //;vk_all_keys=[]
   // CHECKS IF CODEEDITOR HAS  FOCUS  TO KEEP FROM WEIRD BEHAVIOUR FROM INPUT (MOVING OBJECTS ECT)
   if(keyboard_check_pressed(vk_delete)&&mouse_x<window.innerWidth/2&&document.activeElement!=document.getElementById("codeIDE")){
     selected.tId=-1;
-    duplicate = {};
+  duplicate = {};
     duplicating = false;
     cur_value=null;
     for(let i = objects.length-1; i>=0; i--){
-    if(objects[i].sel==true&&coding==false){
-		objects.splice(i,1);
-		document.getElementById("editor").style.display='none';
-		}
+      if(objects[i].sel==true&&coding==false){
+        objects.splice(i,1);
+        document.getElementById("editor").style.display='none';
+      }
     }
     menuRect.mode=0;
   }
@@ -1081,14 +1121,14 @@ function loop(){ //;vk_all_keys=[]
   menuRect.loop();
   tilesRect.loop();
   if(mouse_x<canvas.width/2){
-	  document.title = title
+    document.title = title
   }
   
- if(keyboard_check(115)){
-	 resizePanels(mouse_x)
-	 
-	 //key_down[115] = false
- }
+  if(keyboard_check(115)){
+    resizePanels(mouse_x)
+    
+    //key_down[115] = false
+  }
 }
 
 function draw(){
@@ -1182,45 +1222,45 @@ const blob = new Blob([content], { type: "text/json" }); // Create a Blob object
 }
 function exportGAME() {
   var content = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${title}</title>
-<style>
-body{
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: black;
+  <style>
+  body{
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: black;
+    
+  }
+  canvas {
+    // border: 2px solid #000;
+    background-color: white;
+    height:100vh;
+  }
+  </style>
+  </head>
   
-}
-canvas {
-  // border: 2px solid #000;
-  background-color: white;
-  height:100vh;
-}
-</style>
-</head>
-
-<body>
-<canvas id="canvas"></canvas>
-
-<script>
-function resizeCanvas() {
+  <body>
+  <canvas id="canvas"></canvas>
   
-  var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-  var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  canvas.style.width=WIDTH+'px';
-  canvas.style.height=HEIGHT+'px';
-  requestFullscreen(element)
-}
-//window.addEventListener('resize', resizeCanvas);
+  <script>
+  function resizeCanvas() {
+    
+    var WIDTH = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+    var HEIGHT = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    canvas.style.width=WIDTH+'px';
+    canvas.style.height=HEIGHT+'px';
+    requestFullscreen(element)
+  }
+  //window.addEventListener('resize', resizeCanvas);
 //setTimeout(function(){resizeCanvas()},100);
-
-`
+  
+  `
   content += 'map = '+JSON.stringify(project)
   content += post_game
 const blob = new Blob([content], { type: "text/html" }); // Create a Blob object with the JS content
@@ -1262,20 +1302,20 @@ const blob = new Blob([content], { type: "text/json" }); // Create a Blob object
 function loadScript(){
   document.getElementById('scriptInput').addEventListener('change', function(event) {
     const file = event.target.files[0];
-        const reader = new FileReader();
-      reader.onload = function(e) {
-        const fileContent = e.target.result;
-        //SETS CURRENT CODEIDE TEXT FROM LOCALFILE
-        editor.setValue(fileContent);
-        for(let i = 0; i < objects.length; i++){
-			if(objects[i].sel==true){
-				if(scriptMode==0){objects[i].startCode=fileContent}
-				if(scriptMode==1){objects[i].loopCode=fileContent}
-				if(scriptMode==2){objects[i].drawCode=fileContent}
-			}
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const fileContent = e.target.result;
+      //SETS CURRENT CODEIDE TEXT FROM LOCALFILE
+      editor.setValue(fileContent);
+      for(let i = 0; i < objects.length; i++){
+        if(objects[i].sel==true){
+        if(scriptMode==0){objects[i].startCode=fileContent}
+        if(scriptMode==1){objects[i].loopCode=fileContent}
+        if(scriptMode==2){objects[i].drawCode=fileContent}
         }
-      };
-      reader.readAsText(file);  // Read the file content as text
+      }
+    };
+    reader.readAsText(file);  // Read the file content as text
     
   });
   document.getElementById('scriptInput').click();
@@ -1314,14 +1354,14 @@ function loadOb(){
       const reader = new FileReader();
       reader.onload = function(e) {
         const fileContent = e.target.result;
-        impOb = JSON.parse(fileContent);  
+        impOb = JSON.parse(fileContent);
         objects[hostOb].startCode=impOb.startCode
         objects[hostOb].loopCode=impOb.loopCode
         objects[hostOb].drawCode=impOb.drawCode
         objects[hostOb].w=impOb.w
         objects[hostOb].h=impOb.h
         objects[hostOb].rot=impOb.rot
-         };
+      };
       reader.readAsText(file);  // Read the file content as text
     } else {
       alert('Please select a valid JSON file');
@@ -1337,32 +1377,32 @@ function show_code(){
     if(scriptMode==2){object_code=JSON.stringify(objects[i].drawCode)}
     if(scriptMode==3){object_code=JSON.stringify(objects[i].name)}
     if(scriptMode==4){object_code=JSON.stringify(objects[i].tId)}
-    if(scriptMode==5){object_code=JSON.stringify(project.gameCode)} 
+    if(scriptMode==5){object_code=JSON.stringify(project.gameCode)}
       //SETS CODEIDE CODE
       let code = object_code.replace(/^"|"$/g, '').replace(/\\n/g, '\n')
       document.getElementById("editor").style.display='block'
       editor.setValue(formatCode(code));
       
     }
-   }
+  }
 }
 
 function test(){
   
   if(keyboard_check(vk_ctrl)&&keyboard_check(vk_shift)){
-	  if(confirm('Reset level_ed?')){
-	  localStorage.removeItem("level_ed");
-	  reset();
-	  location.reload();
+    if(confirm('Reset level_ed?')){
+      localStorage.removeItem("level_ed");
+      reset();
+      location.reload();
+    }
+  }else{
+    var content = pre_game
+    content += 'map = '+JSON.stringify(project)
+    content += post_game
+    var myWindow = window.open();
+    myWindow.document.write(content);
+    myWindow.document.title = title;
   }
-	  }else{
-		  var content = pre_game
-		  content += 'map = '+JSON.stringify(project)
-		  content += post_game
-		  var myWindow = window.open();
-		  myWindow.document.write(content);
-		  myWindow.document.title = title;
-}
 }
 function helpBoxBAK() {
   //helptext
@@ -1520,19 +1560,20 @@ function formatCode(inputCode) {
     return lines.join('\n')
   }
   function resizePanels(xVal){
-	  if(xVal>canvas.width/2+4){xVal=canvas.width/2+4}
-	  tilesRect.x = xVal
-	  tilesRect.w = canvas.width-xVal
+  if(xVal>canvas.width/2+4){xVal=canvas.width/2+4}
+    tilesRect.x = xVal
+    tilesRect.w = canvas.width-xVal
     document.getElementById("editor").style.left=(tilesRect.x+4)+'px';
     document.getElementById("editor").style.top=(tilesRect.y+4)+'px';
     document.getElementById("editor").style.width=(tilesRect.w-8)+'px';
     document.getElementById("editor").style.height=(tilesRect.h-8)+'px';
     document.getElementsByClassName("CodeMirror")[0].style.fontSize =   project.codeSize+"px";
-    editor.refresh();  
- 
+    editor.refresh();
+    
   }
-</script>
-<script type='text/javascript' src='engine.js'></script>
-
-</body>
-</html>
+  </script>
+  <script type='text/javascript' src='engine.js'></script>
+  
+  </body>
+  </html>
+  
