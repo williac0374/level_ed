@@ -28,7 +28,8 @@ Simply open `level_ed.html` in any modern web browser (Chrome, Firefox, Edge).
 6. Click `Load Project` to load a saved project.
 7. Select a tile from the right panel.
 8. Click on the level area to place the tile.
-9. Switch to `Objects` mode to add game objects.
+9. right Click on the level area to place the delete tiles.
+10. Switch to `Objects` mode to add or delete game objects.
 ### **Editing Object Scripts**
 1. Select an object and open the `Code Editor`.
 2. Edit the script in one of the available modes:
