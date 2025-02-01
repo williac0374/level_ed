@@ -1,4 +1,4 @@
-# Level_Ed - Drag and Drop Game Maker
+# Level Editor - Drag and Drop Game Maker
 
 ## Overview
 Level_Ed is a JavaScript-based game editor that allows users to create levels by dragging and dropping tiles and objects. It features an integrated CodeMirror-based IDE for scripting object behaviors.
@@ -15,7 +15,6 @@ Level_Ed is a JavaScript-based game editor that allows users to create levels by
 ### Local Installation
 1. Clone or download this repository.
 2. Open `level_ed.html` in a browser.
-3. try it live https://williac0374.github.io/level_ed/level_ed.html
 ### Online Usage
 Simply open `level_ed.html` in any modern web browser (Chrome, Firefox, Edge).
 
@@ -30,7 +29,6 @@ Simply open `level_ed.html` in any modern web browser (Chrome, Firefox, Edge).
 7. Select a tile from the right panel.
 8. Click on the level area to place the tile.
 9. Switch to `Objects` mode to add game objects.
-
 ### **Editing Object Scripts**
 1. Select an object and open the `Code Editor`.
 2. Edit the script in one of the available modes:
@@ -51,6 +49,9 @@ Simply open `level_ed.html` in any modern web browser (Chrome, Firefox, Edge).
 ### **Keyboard Shortcuts**
 - `Shift + S`: Copy selected object(click left mouse button to place copy of object)
 - `Shift + e`: Export selected object to a json file.
+- `Shift + e`: Export selected object to a json file.
+- `LeftMouse + v`: Moves viewport around map.
+- `LeftMouse + v + s`: sets Lower right corner of viewport.
 - `Shift + i`: import a previously saved object into the currently selected one(doesnt change tId)
 - `F9`: test game in a new tab
 
@@ -58,10 +59,15 @@ Simply open `level_ed.html` in any modern web browser (Chrome, Firefox, Edge).
 - maybe???
 
 ## License
-This project is open-source and free to use. and probably super buggy
+This project is open-source and free to use and probalby super buggy.
  
 ## P.S
 - the game engine this is built on is based off of tululoo game maker and other things Ive looked up copied and pasted.
+- in the object editor `me` is how the obects refer themselves for example in the loop of an object `me.x++` increases an objects x coordinate by one.
+- the viewport which is shown in yellow dotted lines on the map is the what you will see when running the game.
+- by increaseing or decreasing its size you effectifly zoom in or out.
+- it can be moved by setting `viewport.x` , `viewport.y`, `viewport.w`, `viewport.h` although changing width and height refreshes the screen and is jarring.
+-- by setting the x and y of the viewport you can cause it to follow an object.
 - by looking at the pre.js  post.js  and help.js It is possible to rip the engine out and put yours in possibly.
 
 
