@@ -20,7 +20,7 @@ vk_pause = 19, vk_q = 81, vk_r = 82, vk_right = 39, vk_s = 83, vk_shift = 16, vk
 vk_subtract = 109, vk_t = 84, vk_tab = 9, vk_u = 85, vk_up = 38, vk_v = 86, vk_w = 87,
 vk_x = 88, vk_y = 89, vk_z = 90,
 // i/o variables:
-mouse_x = mouse_y = 0, mouse_down = mouse_pressed = mouse_released = false,wheelDir=0,
+mouse_x = mouse_y = 0, mouse_down = mouse_right_down= mouse_pressed = mouse_released = false,wheelDir=0,
 key_down = [], key_pressed = [], key_released = [],all_keys_pressed = [],all_keys_released = [];
 vk_all_keys = [];
 function make_sound(_src,buffers){
@@ -29,9 +29,9 @@ function make_sound(_src,buffers){
     for(let i = 0; i < buffers; i++ ){
       temp[i] = document.createElement('audio');
       temp[i].setAttribute('src', _src);
-        temp[i].onerror = function() {
-    alert("Error: Failed to load: "+_src);
-};
+      temp[i].onerror = function() {
+        alert("Error: Failed to load: "+_src);
+      };
     }
     return temp;
   }
@@ -63,7 +63,7 @@ function drawWrappedText(text, x, y, maxWidth, lineHeight,fontSize, weight){
   let line = '';
   let currentY = y;
   // Set font and text style
-  if(weight==null){weight=400}
+if(weight==null){weight=400}
   ctx.font = weight+" "+fontSize+"px Helvetica";
   for (let word of words) {
     const testLine = line + (line ? ' ' : '') + word;
@@ -94,7 +94,7 @@ function text_fit(text,width){
 }
 // draw text:
 function draw_text(x, y, text, size,weight) {
-  if(weight==null){weight=400}
+if(weight==null){weight=400}
   ctx.globalAlpha =master_alpha;
 if(size==null){size=24}
   ctx.font = weight+" "+size+"px Helvetica";
@@ -103,7 +103,7 @@ if(size==null){size=24}
   ctx.fillText(text, x, y);
 }
 function draw_centered_text(x, y, text, size, weight) {
-  if(weight==null){weight=400}
+if(weight==null){weight=400}
   ctx.globalAlpha =master_alpha;
 if(size==null){size=24}
   ctx.font = weight+" "+size+"px Helvetica";
@@ -117,7 +117,7 @@ function draw_set_image(file){
   temp.loaded=false;
   temp.onerror = function() {
     alert("Error: Failed to load: "+file);
-};
+  };
 temp.onload = function () {temp.loaded=true};
   return temp;
 }
@@ -147,7 +147,7 @@ if(source_h==null){source_h=img.height}
     //ctx.translate(x+ox,y+oy);
     ctx.translate(x,y);
     if(rot!=0){
-    ctx.rotate(rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
+      ctx.rotate(rot*Math.PI/180);//tu_r2d = -180 / Math.PI, tu_d2r = Math.PI / -180
     }
     ctx.drawImage(img,source_x, source_y, source_w, source_h, -ox,-oy,w,h);
     ctx.restore()
@@ -286,30 +286,30 @@ function kUp(e){
   }
   key_down[keyCode] = false;
 }
-function mDown(){
-  if (!mouse_down) {
-    mouse_down = true;
-    mouse_pressed = true;
+function mDown(e){
+  if(e.button == 2) {
+    mouse_right_down=true
   }else{
-    mouse_down = true;
-  }
-}
-function mDown() {
-  if (!mouse_down) {
-    mouse_down = true;
-    mouse_pressed = true;
-  } else {
-    mouse_down = true;
+    if (!mouse_down) {
+      mouse_down = true;
+      mouse_pressed = true;
+    }else{
+      mouse_down = true;
+    }
   }
 }
 
-function mUp() {
-  if (!mouse_down) {
-    mouse_down = false;
-    mouse_pressed = false;
-  } else {
-    mouse_down = false;
-    mouse_released = true;
+function mUp(e) {
+  if(e.button == 2) {
+    mouse_right_down=false
+  }else{
+    if (!mouse_down) {
+      mouse_down = false;
+      mouse_pressed = false;
+    } else {
+      mouse_down = false;
+      mouse_released = true;
+    }
   }
 }
 
@@ -357,7 +357,11 @@ addEventListener('wheel', wheel,false);
 addEventListener("touchstart", touchStart, { passive: false });
 addEventListener("touchend", touchEnd, { passive: false });
 addEventListener("touchmove", mMove, { passive: false });
+addEventListener('contextmenu', function(event) {
+  // Prevent the default context menu from appearing
+  event.preventDefault();
 
+});
 function wheel(e) {
   if (e.deltaY < 0) {
     wheelDir++;
