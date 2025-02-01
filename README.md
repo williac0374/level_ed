@@ -47,12 +47,11 @@ Simply open `level_ed.html` in any modern web browser (Chrome, Firefox, Edge).
 - `Export Game`: Generates a standalone HTML file.
 
 ### **Keyboard Shortcuts**
-- `Shift + S`: Copy selected object(click left mouse button to place copy of object)
+- `Shift + d`: Copy selected object(click left mouse button to place copy of object)
 - `Shift + e`: Export selected object to a json file.
-- `Shift + e`: Export selected object to a json file.
+- `Shift + i`: import a previously saved object into the currently selected one(doesnt change tId)
 - `LeftMouse + v`: Moves viewport around map.
 - `LeftMouse + v + s`: sets Lower right corner of viewport.
-- `Shift + i`: import a previously saved object into the currently selected one(doesnt change tId)
 - `F9`: test game in a new tab
 
 ## Future Improvements
