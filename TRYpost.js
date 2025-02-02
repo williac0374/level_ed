@@ -247,6 +247,12 @@ function makeName(){
   }
   return name
 }
+function draw_tile(tId,x,y){
+  let sx = tId%columns*gridSize;
+  let sy = floor(tId/columns)*gridSize;
+  draw_image(tileset,viewport.x+x,viewport.y+y,gridSize,gridSize,0,0,0,sx,sy,gridSize,gridSize)
+  
+}
 function makeOb(tId,type,x,y){
   let temp = {
     name:makeName(),
