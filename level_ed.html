@@ -1109,20 +1109,7 @@ if(keyboard_check_pressed(120)){key_down[120]=false;key_pressed[120]=false;test(
       alert([colR,colG,colB])
     }
   }
-  // CHECKS IF CODEEDITOR HAS  FOCUS  TO KEEP FROM WEIRD BEHAVIOUR FROM INPUT (MOVING OBJECTS ECT)
-  if(keyboard_check_pressed(vk_delete)&&mouse_x<window.innerWidth/2&&document.activeElement!=document.getElementById("codeIDE")){
-    selected.tId=-1;
-  duplicate = {};
-    duplicating = false;
-    cur_value=null;
-    for(let i = objects.length-1; i>=0; i--){
-      if(objects[i].sel==true&&coding==false){
-        objects.splice(i,1);
-        document.getElementById("editor").style.display='none';
-      }
-    }
-    menuRect.mode=0;
-  }
+
   mapRect.loop();
   menuRect.loop();
   tilesRect.loop();
