@@ -204,6 +204,33 @@ function showCenteredPopup(text) {
   div.appendChild(button);
   document.body.appendChild(div);
 }
+function ob(name){
+  let obj = null
+  for(let i = 0; i < objects.length; i++){
+    if(objects[i].name==name){
+      obj=objects[i]
+    }
+  }
+  return obj
+}
+function type(type){
+  let obj = []
+  for(let i = 0; i < objects.length; i++){
+    if(objects[i].type==type){
+      obj.push(objects[i])
+    }
+  }
+  return obj
+}
+function all_type(type,callback){
+  let obj = []
+  for(let i = 0; i < objects.length; i++){
+    if(objects[i].type==type){
+      callback(objects[i])
+    }
+  }
+  
+}
 function start(){
   load_map(map)
 }
