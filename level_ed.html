@@ -57,6 +57,7 @@ canvas {
 <canvas id="canvas"></canvas>
 <div id='editor'></div>
 <script>
+  errorPop=false
 panelMiddle=0
 duplicate={}
 duplicating=false
@@ -884,7 +885,7 @@ tilesRect = {
           let tY=round((my - (this.y+4))/((this.sprite.height*this.scale)/((this.sprite.height*this.scale)/(this.gridSize*this.scale))))+(this.sorY/this.gridSize)
           document.title = 'tId: '+floor((tY*this.columns)+tX)
           ////////////////////////////////////////////
-          if(mouse_check_pressed()){
+          if(mouse_check_pressed()&&errorPop==false){
             selected.x=mx;
             selected.y=my;
             selected.w=gs;
@@ -1130,6 +1131,32 @@ if(keyboard_check_pressed(120)){key_down[120]=false;key_pressed[120]=false;test(
     
     //key_down[115] = false
   }
+  
+  //triggers when there is an error in the test game
+  if(localStorage.getItem("level_ed_error")!=null){
+    let err = JSON.parse(localStorage.getItem("level_ed_error"))
+    showCenteredPopup(err.error)
+    document.getElementById("erPop").focus();
+    if(err.object!=null){
+      for(let i = objects.length-1; i>=0; i--){
+        objects[i].sel=false;
+        if(err.object==i){
+          objects[i].sel=true;
+        }
+      }
+    }
+    scriptMode=err.scriptMode
+    
+  if(scriptMode==0){object_code=JSON.stringify(objects[err.object].startCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+  if(scriptMode==1){object_code=JSON.stringify(objects[err.object].loopCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+  if(scriptMode==2){object_code=JSON.stringify(objects[err.object].drawCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+  if(scriptMode==5){object_code=JSON.stringify(project.gameCode).replace(/^"|"$/g, '').replace(/\\n/g, '\n');}
+    document.getElementById("editor").style.display='block'
+    editor.setValue(object_code);
+   localStorage.removeItem("level_ed_error"); 
+    menuRect.mode=1;
+  }
+  
 }
 
 function draw(){
@@ -1572,9 +1599,56 @@ function formatCode(inputCode) {
     editor.refresh();
     
   }
+  
+  function showCenteredPopup(text) {
+    errorPop=true;
+    var div = document.createElement('div');
+    div.id="erPop";
+    div.style.position = 'fixed';
+    div.style.top = '50vh';
+    div.style.left = '50vw';
+    div.style.transform = 'translate(-50%, -50%)';
+    div.style.width = '400px';
+    div.style.height = '200px';
+    div.style.background = 'white';
+    div.style.color = 'black';
+    div.style.padding = '20px';
+    div.style.borderRadius = '10px';
+    div.style.boxShadow = '0 0 10px 0px black';
+    div.style.textAlign = 'center';
+    div.style.zIndex = '9999';
+    div.style.display = 'block';
+    div.style.fontSize = '18px';
+    
+    var h1 = document.createElement('h1');
+    h1.style.margin = '0';
+    h1.style.padding = '0 0 10px 0';
+    h1.style.fontSize = '18px';
+    h1.innerHTML = text;
+    
+    var button = document.createElement('button');
+    button.style.background = '#00b3cc';
+    button.style.border = 'none';
+    button.style.borderRadius = '5px';
+    button.style.padding = '10px 20px';
+    button.style.margin = '10px auto';
+    button.style.cursor = 'pointer';
+    button.addEventListener('click', function() {
+      errorPop=false;
+      mouse_down=false;
+      div.parentNode.removeChild(div);
+    });
+    
+    button.textContent = 'OK';
+    
+    div.appendChild(h1);
+    div.appendChild(button);
+    document.body.appendChild(div);
+  }
   </script>
   <script type='text/javascript' src='engine.js'></script>
   
   </body>
   </html>
+  
   
