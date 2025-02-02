@@ -786,15 +786,15 @@ mapRect = {
               }else{
                 if(mode==0){
                 selected.tId = tiles[mapCellY][mapCellX];
-                  //project.tiles[mapCellY][mapCellX]=selected.tId;
+                  selected.tId = project.tiles[mapCellY][mapCellX];
                 }
                 if(mode==1){
                  selected.tId = tiles2[mapCellY][mapCellX];
-                  //project.tiles2[mapCellY][mapCellX]=selected.tId;
+                 selected.tId =  project.tiles2[mapCellY][mapCellX];
                 }
                 if(mode==3){
                  selected.tId = tiles3[mapCellY][mapCellX];
-                 // project.tiles3[mapCellY][mapCellX]=selected.tId;
+                 selected.tId = project.tiles3[mapCellY][mapCellX];
                 }
                 cur_value = tilesRect.sprite;
                 
