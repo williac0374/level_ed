@@ -74,6 +74,7 @@ var editor = CodeMirror(document.getElementById("editor"), {
 });
 cMirrorCursor=null
 editor.on("change",function(cm,change){
+  mouse_right_down = false;
   cMirrorCursor=editor.getCursor()
   for(let i = objects.length-1; i>=0; i--){
     if(objects[i].sel==true){
@@ -102,6 +103,7 @@ editor.on('blur', () => {
     }
   }
   coding=false;
+  mouse_right_down = false;
   selection = editor.getSelection();
   if (selection) {
     selectedRange = editor.listSelections()[0];
@@ -1645,7 +1647,6 @@ function formatCode(inputCode) {
     div.appendChild(button);
     document.body.appendChild(div);
   }
-
 document.getElementById('editor').addEventListener('contextmenu', function(event) {
   // Only allow context menu for this element
   event.stopPropagation();
