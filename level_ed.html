@@ -380,11 +380,13 @@ mapRect = {
           let oy = (this.mapG*objects[i].h)/2;
           draw_image(tilesRect.sprite,this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,objects[i].rot,ox,oy,sx,sy,tilesRect.gridSize,tilesRect.gridSize)
           if(objects[i].sel==true){
-            draw_set_color(255,255,255)
-            draw_set_linedash([])
-            draw_set_linewidth(2)
+                   draw_set_color(255,255,255)
+            draw_set_linewidth(6)
+            ctx.lineDashOffset = -hl;
+            draw_set_linedash([6,4])
             draw_rectangle(this.mapX+4+(cx*this.mapG),this.mapY+4+(cy*this.mapG),this.mapG*objects[i].w,this.mapG*objects[i].h,true,objects[i].rot,ox,oy)
-          }
+            draw_set_linedash([])
+            ctx.lineDashOffset = 0 }
           if(oHL==true){
             draw_set_color(255,255,255)
             draw_set_linewidth(6)
