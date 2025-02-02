@@ -97,53 +97,52 @@ function draw_map() {
       continue;
     }
     try {
-    eval(gameCode)
-     } catch (error) {
-		if(error){
-			if (confirm(" gCode code Error: " + error.message)) {
-				window.close();
-			}
-		}
-	}   
+      eval(gameCode)
+    } catch (error) {
+      if(error){
+        let emess = " gCode Error: " +gameCode+"<br>"+error.message
+      localStorage.setItem("level_ed_error", JSON.stringify({error:error.message,object:null,scriptMode:5}))
+        window.close();
+      }
+    }
     if (me.firstRun == true) {
       me.firstRun = false;
       try {
-      eval(me.startCode);
-	  } catch(error){
-		if(error){
-			if (confirm(me.name+" start code Error: " + error.message)) {
-				window.close();
-			}
-		}	  
-	  }
+        eval(me.startCode);
+      } catch(error){
+        if(error){
+          let emess = me.name+" startCode Error: " + me.startCode+"<br>"+error.message
+        localStorage.setItem("level_ed_error", JSON.stringify({error:error.message,object:i,scriptMode:0}))
+          window.close();
+        }
+      }
     }
     try {
-    eval(me.loopCode);
+      eval(me.loopCode);
     } catch (error) {
-		if(error){
-		    showCenteredPopup(me.name+" loop code Error: " + me.loopCode+"<br>"+error.message)
-			//if (confirm(me.name+" loop code Error: " + me.loopCode+"<b"+"r>"+error.message)) {
-			//	window.close();
-			//}
-		}
-	}
+      if(error){
+        let emess = me.name+" loopCode Error: " + me.loopCode+"<br>"+error.message
+      localStorage.setItem("level_ed_error", JSON.stringify({error:error.message,object:i,scriptMode:1}))
+        window.close();
+      }
+    }
     if (me.tId != 0) {
       draw_image(tileset, x, y, w, h, rot, ox, oy, sx, sy, gridSize, gridSize);
     } else {
-    try {
-      eval(me.drawCode);
-	} catch(error){
-			if(error){
-			if (confirm(me.name+" draw code Error: " + error.message)) {
-				window.close();
-			}
-		}
-	}
+      try {
+        eval(me.drawCode);
+      } catch(error){
+        if(error){
+          let emess = me.name+" drawCode Error: " + me.drawCode+"<br>"+error.message
+        localStorage.setItem("level_ed_error", JSON.stringify({error:error.message,object:i,scriptMode:2}))
+          window.close();
+        }
+      }
     }
-	if(objects[i].kill==true){
-	   objects.splice(i,1);
-	}
-
+    if(objects[i].kill==true){
+      objects.splice(i,1);
+    }
+    
   }
     // Draw tiles within the viewport
   for (let y = startTileY; y < endTileY; y++) {
@@ -196,6 +195,7 @@ function showCenteredPopup(text) {
   button.style.margin = '10px auto';
   button.style.cursor = 'pointer';
   button.addEventListener('click', function() {
+   window.close();
     div.parentNode.removeChild(div);
   });
   button.textContent = 'OK';
