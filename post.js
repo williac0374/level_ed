@@ -106,60 +106,7 @@ function draw_map() {
       draw_image(tileset, x, y, w, h, rot, ox, oy, sx, sy, gridSize, gridSize);
     } else {
       eval(me.drawCode);
-    }post_game = `
-      }
     }
-    if(match!=true){
-      name= 'object'+index
-      index = 100000;
-    }
-  }
-  return name
-}
-
-function makeOb(tId,type,x,y){
-  let temp = {
-    name:makeName(),
-    tId:tId,
-    type:type,
-    depth:0,
-    x:x,
-    y:y,
-    mapX:round(x/gridSize),
-    mapY:round(y/gridSize),
-    w:1,
-    h:1,
-    rot:0,
-    ox:0,
-    oy:0,
-    startCode:'',
-    loopCode:'',
-    drawCode:'',
-    sel:false,
-    kill:false,
-  }
-  objects.push(temp);
-  return temp
-}
-function start(){
-  load_map(map)
-}
-
-
-function loop(){
-  
-}
-
-function draw(){
-  draw_map()
-}
-</scr`+`ipt>
-<script type='text/javascript' src='data:application/x-javascript;base64,Ly9taXNjCm1hc3Rlcl9hbHBoYSA9IDE7dGltZVNoaWZ0PTAsRlBTPVtdLGZwcz0wLHJ1bj10cnVlLGZ1bGxzY3JlZW49ZmFsc2U7Ci8vIG1hdGg6Cm1heCA9IE1hdGgubWF4LCBtaW4gPSBNYXRoLm1pbiwgcm91bmQgPSBNYXRoLnJvdW5kLCBmbG9vciA9IE1hdGguZmxvb3IsIGNlaWwgPSBNYXRoLmNlaWwsCnNpbiA9IE1hdGguc2luLCBjb3MgPSBNYXRoLmNvcywgc3FydCA9IE1hdGguc3FydCwgdGFuID0gTWF0aC50YW4sIHJhbmQgPSBNYXRoLnJhbmRvbSwKYXJjY29zID0gTWF0aC5hY29zLCBhcmNzaW4gPSBNYXRoLmFzaW4sIGFyY3RhbiA9IE1hdGguYXRhbiwgYXJjdGFuMiA9IE1hdGguYXRhbjIsCnR1X3IyZCA9IC0xODAgLyBNYXRoLlBJLCB0dV9kMnIgPSBNYXRoLlBJIC8gLTE4MCwgdHVfMnBpID0gTWF0aC5QSSAqIDIsCi8vIGkvbyBjb25zdGFudHM6CnZrXzAgPSA0OCwgdmtfMSA9IDQ5LCB2a18yID0gNTAsIHZrXzMgPSA1MSwgdmtfNCA9IDUyLCB2a181ID0gNTMsIHZrXzYgPSA1NCwKdmtfNyA9IDU1LCB2a184ID0gNTYsIHZrXzkgPSA1NywgdmtfYSA9IDY1LCB2a19hZGQgPSAxMDcsIHZrX2FsdCA9IDE4LCB2a19iID0gNjYsCnZrX2JhY2tzcGFjZSA9IDgsIHZrX2MgPSA2NywgdmtfY3RybCA9IDE3LCB2a19kID0gNjgsIHZrX2RlY2ltYWwgPSAxMTAsIHZrX2RlbGV0ZSA9IDQ2LAp2a19kaXZpZGUgPSAxMTEsIHZrX2Rvd24gPSA0MCwgdmtfZSA9IDY5LCB2a19lbmQgPSAzNSwgdmtfZW50ZXIgPSAxMywgdmtfZXNjYXBlID0gMjcsCnZrX2YxID0gMTEyLCB2a19mMiA9IDExMywgdmtfZjMgPSAxMTQsIHZrX2Y0ID0gMTE1LCB2a19mNSA9IDExNiwgdmtfZjYgPSAxMTcsCnZrX2Y3ID0gMTE4LCB2a19mOCA9IDExOSwgdmtfZjkgPSAxMjAsIHZrX2YxMCA9IDEyMSwgdmtfZjExID0gMTIyLCB2a19mMTIgPSAxMjMsCnZrX2cgPSA3MSwgdmtfaCA9IDcyLCB2a19ob21lID0gMzYsIHZrX2YgPSA3MCwgdmtfaSA9IDczLCB2a19pbnNlcnQgPSA0NSwgdmtfaiA9IDc0LCB2a19rID0gNzUsCnZrX2wgPSA3NiwgdmtfbGVmdCA9IDM3LCB2a19tID0gNzcsIHZrX211bHRpcGx5ID0gMTA2LCB2a19uID0gNzgsIHZrX251bTAgPSA5NiwgdmtfbnVtMSA9IDk3LAp2a19udW0yID0gOTgsIHZrX251bTMgPSA5OSwgdmtfbnVtNCA9IDEwMCwgdmtfbnVtNSA9IDEwMSwgdmtfbnVtNiA9IDEwMiwgdmtfbnVtNyA9IDEwMywKdmtfbnVtOCA9IDEwNCwgdmtfbnVtOSA9IDEwNSwgdmtfbyA9IDc5LCB2a19wID0gODAsIHZrX3BhZ2Vkb3duID0gMzQsIHZrX3BhZ2V1cCA9IDMzLAp2a19wYXVzZSA9IDE5LCB2a19xID0gODEsIHZrX3IgPSA4MiwgdmtfcmlnaHQgPSAzOSwgdmtfcyA9IDgzLCB2a19zaGlmdCA9IDE2LCB2a19zcGFjZSA9IDMyLAp2a19zdWJ0cmFjdCA9IDEwOSwgdmtfdCA9IDg0LCB2a190YWIgPSA5LCB2a191ID0gODUsIHZrX3VwID0gMzgsIHZrX3YgPSA4NiwgdmtfdyA9IDg3LAp2a194ID0gODgsIHZrX3kgPSA4OSwgdmtfeiA9IDkwLAovLyBpL28gdmFyaWFibGVzOgptb3VzZV94ID0gbW91c2VfeSA9IDAsIG1vdXNlX2Rvd24gPSBtb3VzZV9yaWdo￼￼
-
-</b`+`ody>
-</ht`+`ml>
-`
-
 	if(objects[i].kill==true){
 	   objects.splice(i,1);
 	}
@@ -183,6 +130,12 @@ function draw(){
       }
     }
   }
+}
+function draw_tile(tId,x,y){
+  let sx = tId%columns*gridSize;
+  let sy = floor(tId/columns)*gridSize;
+  draw_image(tileset,viewport.x+x,viewport.y+y,gridSize,gridSize,0,0,0,sx,sy,gridSize,gridSize)
+  
 }
 function ob(name){
   let obj = null
