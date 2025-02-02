@@ -137,6 +137,18 @@ function draw_tile(tId,x,y){
   draw_image(tileset,viewport.x+x,viewport.y+y,gridSize,gridSize,0,0,0,sx,sy,gridSize,gridSize)
   
 }
+function get_tile(map,x,y){
+  let curr_tId = null
+  let mapX = snap(x,gridSize)/gridSize
+  let mapY = snap(y,gridSize)/gridSize
+  curr_tId= map[mapY][mapX]
+  return curr_tId
+}
+function set_tile(map,x,y,tileID){
+  let mapX = snap(x,gridSize)/gridSize
+  let mapY = snap(y,gridSize)/gridSize
+  map[mapY][mapX]=tileID
+}
 function ob(name){
   let obj = null
   for(let i = 0; i < objects.length; i++){
