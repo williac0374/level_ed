@@ -796,8 +796,8 @@ mapRect = {
                  selected.tId = tiles3[mapCellY][mapCellX];
                  selected.tId = project.tiles3[mapCellY][mapCellX];
                 }
-                selected.cellX = selected.tId % columns;
-                selected.cellY = floor(selected.tId / columns);
+                selected.cellX = selected.tId % project.tColumns;
+                selected.cellY = floor(selected.tId / project.tColumns);
                 cur_value = tilesRect.sprite;
                 
               }
