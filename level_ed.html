@@ -1645,6 +1645,11 @@ function formatCode(inputCode) {
     div.appendChild(button);
     document.body.appendChild(div);
   }
+
+document.getElementById('editor').addEventListener('contextmenu', function(event) {
+  // Only allow context menu for this element
+  event.stopPropagation();
+});
   </script>
   <script type='text/javascript' src='engine.js'></script>
   
