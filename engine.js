@@ -22,7 +22,7 @@ vk_x = 88, vk_y = 89, vk_z = 90,
 // i/o variables:
 mouse_x = mouse_y = 0, mouse_down = mouse_right_down= mouse_pressed = mouse_released = false,wheelDir=0,
 key_down = [], key_pressed = [], key_released = [],all_keys_pressed = [],all_keys_released = [];
-vk_all_keys = [];
+vk_all_keys = [];is_touch=false
 function make_sound(_src,buffers){
   if (_src != '') {
     let temp = [];
@@ -287,8 +287,17 @@ function kUp(e){
   key_down[keyCode] = false;
 }
 function mDown(e){
-  if(e.button == 2) {
-    mouse_right_down=true
+  if(!is_touch){
+    if(e.button == 2) {
+      mouse_right_down=true
+    }else{
+      if (!mouse_down) {
+        mouse_down = true;
+        mouse_pressed = true;
+      }else{
+        mouse_down = true;
+      }
+    }
   }else{
     if (!mouse_down) {
       mouse_down = true;
@@ -300,8 +309,18 @@ function mDown(e){
 }
 
 function mUp(e) {
-  if(e.button == 2) {
-    mouse_right_down=false
+  if(!is_touch){
+    if(e.button == 2) {
+      mouse_right_down=false
+    }else{
+      if (!mouse_down) {
+        mouse_down = false;
+        mouse_pressed = false;
+      } else {
+        mouse_down = false;
+        mouse_released = true;
+      }
+    }
   }else{
     if (!mouse_down) {
       mouse_down = false;
@@ -311,6 +330,7 @@ function mUp(e) {
       mouse_released = true;
     }
   }
+  is_touch=false
 }
 
 function mMove(e) {
@@ -318,6 +338,7 @@ function mMove(e) {
   
   // Check for touch input
   if (e.touches) {
+    is_touch=true
     x = e.touches[0].clientX;
     y = e.touches[0].clientY;
   }
@@ -340,11 +361,13 @@ function mMove(e) {
   e.preventDefault(); // Prevent scrolling behavior
 }
 function touchStart(e) {
+  is_touch=true
   mMove(e);
   mDown();
 }
 
 function touchEnd(e) {
+  is_touch=true
   mUp();
 }
 addEventListener("keydown", kDown, false);//16 is shift e.keyCode;
@@ -360,7 +383,7 @@ addEventListener("touchmove", mMove, { passive: false });
 addEventListener('contextmenu', function(event) {
   // Prevent the default context menu from appearing
   event.preventDefault();
-
+  
 });
 function wheel(e) {
   if (e.deltaY < 0) {
@@ -401,3 +424,4 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 var then = Date.now();
 start();
 main();
+
