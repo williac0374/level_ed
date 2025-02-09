@@ -1018,9 +1018,9 @@ makeButton(4+bX,4,'load tSet','loadTiles();mouse_down=false');
 bX+=80;
 makeButton(4+bX,4,'tilegrid size','tilesRect.gridSize=parseInt(prompt("enter tile size",tilesRect.gridSize));tilesRect.columns = tilesRect.sprite.width/tilesRect.gridSize;project.tColumns = tilesRect.columns;project.gridSize=tilesRect.gridSize;localStorage.setItem("level_ed", JSON.stringify(project));mouse_down=false');
 bX+=80;
-makeButton(4+bX,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));mapRect.init();mouse_down=false');
+makeButton(4+bX,4,'mapW','mapRect.mapW=parseInt(prompt("enter map width in cells",mapRect.mapW));set_view();mapRect.init();mouse_down=false');
 bX+=80;
-makeButton(4+bX,4,'mapH','mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));mapRect.init();mouse_down=false');
+makeButton(4+bX,4,'mapH','mapRect.mapH=parseInt(prompt("enter map height in cells",mapRect.mapH));set_view();mapRect.init();mouse_down=false');
 bX+=80;
 makeButton(4+bX,4,'Save Project','saveProject();mouse_down=false');
 bX+=80;
@@ -1473,7 +1473,10 @@ function helpBoxBAK() {
     });
   }
 }
-
+function set_view(){
+viewport.w=gridSize*mapW;
+viewport.h=gridSize*mapH;
+}
 function helpBox() {
   //helptext
   if(document.getElementById("customTextBox")!=null){
